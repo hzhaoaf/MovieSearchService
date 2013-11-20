@@ -2,6 +2,7 @@
 #usage: process the get request of the app
 from django.http import HttpResponse
 from django.utils import simplejson
+from django.forms.models import model_to_dict
 
 from django.utils.http import urlquote
 import urllib
@@ -9,7 +10,7 @@ import urllib
 #import sys
 #sys.path.append('./')
 import search.SearchMysql_v3 as searchmysql
-import search.IndexMysql
+from search import IndexMysql
 from search.models import MovieItems
 '''
 interface for querying from app
@@ -43,7 +44,7 @@ def search(request):
         # we can construct a standard python dictionary and then convert it to json
         # examples for returning json are demonstrated blow
 
-        awrapper = IndexMysql.createawrapper()
+        awrapper = IndexMysql.CreateAWrapper()
         searcher,analyzer = searchmysql.config()
         retlist = searchmysql.run(command,searcher,awrapper)
 
@@ -78,7 +79,7 @@ def search(request):
         retjson['emdjson'] = emdjson
         '''
 
-        return HttpResponse(simplejson.dumps(retjson, ensure_ascii = false), content_type="application/json")
+        return HttpResponse(simplejson.dumps(retjson, ensure_ascii = False), content_type="application/json")
     '''
     except exception, e:
             errjson = {}
@@ -89,14 +90,14 @@ def search(request):
             return httpresponse(simplejson.dumps(errjson, ensure_ascii = false), content_type="application/json")
     '''
 
-def detail(request, movie_id):
+def detail(request, subject_id):
     '''
         根据movie_id，查询电影的detail信息，json形式返回
     '''
-        movie_items = list(MovieItems.objects.filter(subject_id=int(movie_id)))
-        if not movie_items:
-            return HttpResponse("can not find this item")
-        movie_item = movie_items[0]
-
-        return HttpResponse(simplejson.dumps(movie_item.__dict__, ensure_ascii = False), content_type="application/json")
+    movie_items = list(MovieItems.objects.filter(subject_id=int(subject_id)))
+    if not movie_items:
+        return HttpResponse("{'error': 'can not find this item'}")
+    movie_item = movie_items[0]
+    ret = model_to_dict(movie_item)
+    return HttpResponse(simplejson.dumps(ret, ensure_ascii = False), content_type="application/json")
 

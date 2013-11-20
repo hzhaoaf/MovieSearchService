@@ -25,6 +25,6 @@ urlpatterns = patterns('',
 
     # Url conf for search
     #url(r'^search/$', 'search.views.search', name='search'),
-    url(r'^search/$', 'ngbackend.search.search', name='search'),
-    #url(r'^search/', include('search.urls')),
+    #url(r'^search/$', 'ngbackend.search.search', name='search'),
+    url(r'^search/', include('search.urls')),
 )
