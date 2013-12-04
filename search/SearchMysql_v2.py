@@ -21,7 +21,7 @@ from org.apache.lucene.search import BooleanClause
 from org.apache.lucene.search.similarities import BM25Similarity
 
 import json
-from search.sqlConstants import *
+from sqlConstants import *
 
 #what need to do 
 #step 1. change config below
@@ -119,7 +119,7 @@ def run(command,searcher, aWrapper):
         retList.append(tmpDict)
 
     # unicode !
-    #print retList.encode('utf-8')
+    print retList[0]['title'].encode('utf-8')
 
     return retList
 

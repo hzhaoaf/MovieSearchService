@@ -9,9 +9,12 @@ import urllib
 
 #import sys
 #sys.path.append('./')
-import search.SearchMysql_v3 as searchmysql
-from search import IndexMysql
-from search.models import MovieItems
+import SearchMysql_v3 as searchmysql
+#from search import SearchMysql_v3 as searchmysql
+import IndexMysql
+#from search import IndexMysql
+from models import MovieItems
+#from search.models import MovieItems
 '''
 interface for querying from app
 use standard get request
