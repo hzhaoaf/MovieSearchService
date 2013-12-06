@@ -29,7 +29,7 @@ from org.apache.lucene.analysis.tokenattributes import \
     OffsetAttribute, CharTermAttribute, TypeAttribute, \
     PositionIncrementAttribute
 
-import utils 
+import utils
 
 
 #what need to do 
@@ -79,13 +79,13 @@ def printWrappedAnalyzer(aWrapper):
 
 #---end config---
 
-def run(command,searcher, aWrapper):
+def run(command, searcher, aWrapper):
 
     print
 
     if command == '':
         return
-    
+
     #debug
     #print "Searching for:"+command
 
@@ -99,7 +99,7 @@ def run(command,searcher, aWrapper):
     #query = MultiFieldQueryParser.parse(parser, command_jarr)
 
     #创建QueryParser对象 默认的搜索域为title 
-    parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper) 
+    parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
     #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
     query = parser.parse(command)
 
