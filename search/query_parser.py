@@ -20,7 +20,6 @@ class Parser:
 
     def __init__(self):
         self.load_film_terms()
-        pass
 
     def load_film_terms(self):
         '''导入离线生成的terms
@@ -61,4 +60,5 @@ class Parser:
         else:
             query_str = generate_query_by_fields(person_fields_weight + non_person_fields_weight)
         return query_str
+
 
