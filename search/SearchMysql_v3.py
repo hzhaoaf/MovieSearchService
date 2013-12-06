@@ -32,7 +32,7 @@ from org.apache.lucene.analysis.tokenattributes import \
 import utils
 
 from query_parser import Parser
-custom_parser = None
+custom_parser = Parser()
 
 
 #what need to do 
@@ -55,7 +55,6 @@ class IsolationSimilarity(DefaultSimilarity):
 def initJvm():
     #Init the jvm
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
-    custom_parser = new Parser()
     print 'lucene', lucene.VERSION
 
 def config():

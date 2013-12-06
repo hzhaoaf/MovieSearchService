@@ -3,6 +3,9 @@
 '''
     这个模块对用户输入的词进行解析，生成适合我们的query形式
 '''
+import os
+module_dir = os.path.dirname(__file__)  # get current directory
+
 #(field, weight)
 person_fields_weight = [('directors', '1.0'),
                         ('casts', '1.0'),
@@ -10,7 +13,7 @@ person_fields_weight = [('directors', '1.0'),
                         ]
 non_person_fields_weight = [('title', '1.0'),
                             ('original_title', '1.0'),
-                            ('aka': '1.0'),
+                            ('aka', '1.0'),
                             ('countries', '0.5'),
                             ('user_tags', '1.0'),
                             ('summary', '1.0')
@@ -27,9 +30,11 @@ class Parser:
         导入从数据库成生成全部的人名和非人名的术语集合，用来判断用户的术语所属基本类型
 
         '''
-        lines = open('person_temrs.txt', 'r').readlines()
+        person_terms_path = os.path.join(module_dir, 'person_terms.txt')
+        lines = open(person_terms_path, 'r').readlines()
         self.person_terms = set([l.strip() for l in lines])
-        lines = open('non_person_temrs.txt', 'r').readlines()
+        non_person_terms_path = os.path.join(module_dir, 'non_person_terms.txt')
+        lines = open(non_person_terms_path, 'r').readlines()
         self.non_person_terms = set([l.strip() for l in lines])
 
     def parse(self, raw_str):
@@ -51,14 +56,14 @@ class Parser:
             return ' '.join(lines)
 
 
-        if self.person_term.contains(term) and self.non_person_term.contains(term):
-            query_str = generate_query_by_fields(person_fields_weight + non_person_fields_weight)
-        elif self.person_term.contains(term):
-            query_str = generate_query_by_fields(person_fields_weight)
-        elif self.non_person_term.contains(term):
-            query_str = generate_query_by_fields(non_person_fields_weight)
+        if term in self.person_terms and term in self.non_person_terms:
+            query_str = generate_query_by_fields(term, person_fields_weight + non_person_fields_weight)
+        elif term in self.person_terms:
+            query_str = generate_query_by_fields(term, person_fields_weight)
+        elif term in self.non_person_terms:
+            query_str = generate_query_by_fields(term, non_person_fields_weight)
         else:
-            query_str = generate_query_by_fields(person_fields_weight + non_person_fields_weight)
+            query_str = generate_query_by_fields(term, person_fields_weight + non_person_fields_weight)
         return query_str
 
 
