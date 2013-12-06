@@ -153,7 +153,7 @@ class IndexMySql(object):
         t1.setStored(True)
         t1.setTokenized(False)
         t1.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS)
-        
+
         t2 = FieldType()
         t2.setIndexed(True)
         t2.setStored(False)
@@ -179,7 +179,7 @@ class IndexMySql(object):
             cur.execute('SET NAMES utf8;')
             cur.execute('SET CHARACTER SET utf8;')
             cur.execute('SET character_set_connection=utf8;')
-            
+
             #------step 3------
             cur.execute("SELECT * FROM movie_items")
 
@@ -189,7 +189,7 @@ class IndexMySql(object):
                 row = cur.fetchone()
 
                 #------step 4------
-                summary = row[SUMMARY]  
+                summary = row[SUMMARY]
                 subject_id = row[SUBJECT_ID]
 
 
@@ -205,7 +205,6 @@ class IndexMySql(object):
                     wtfFile.write(year+'\n')
                     #except:
                     #    wtfFile.write('*************'+'\n')
-                        
 
 
 
@@ -272,14 +271,12 @@ class IndexMySql(object):
                 #user_tags 原始字符串要存，reRank要用：
                 doc.add(StringField("raw_user_tags",row[USER_TAGS],Field.Store.YES))
                 doc.add(StringField("raw_others_like",row[OTHERS_LIKE],Field.Store.YES))
-                
 
                 user_tags_str = ''
                 others_like_str = ''
                 tags_len = 0
-                
                 if row[USER_TAGS]!='':
-                    user_tags_list = row[USER_TAGS].split(delim) 
+                    user_tags_list = row[USER_TAGS].split(delim)
                     for tag_pair in user_tags_list:
                         if tag_pair!='':#字符串的最后一个字符是￥，这样split之后最后一个元素是空字符
                             tag_name = tag_pair.split(delim_uo)[0]+' ' # dont forget this space !!
@@ -317,7 +314,7 @@ class IndexMySql(object):
                 doc.add(f)
 
                 #fields which should be analyzed with good analyzer
-                f = Field("title", row[TITLE], t3)                
+                f = Field("title", row[TITLE], t3)
                 f.setBoost(boost)
                 doc.add(f)
 
@@ -349,7 +346,7 @@ class IndexMySql(object):
                 if boost>upper:
                     print boostProb
                     print maxDict
-                    
+
                     exit(0)
                 writer.addDocument(doc)
 

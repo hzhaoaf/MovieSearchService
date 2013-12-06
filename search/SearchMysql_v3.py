@@ -29,7 +29,10 @@ from org.apache.lucene.analysis.tokenattributes import \
     OffsetAttribute, CharTermAttribute, TypeAttribute, \
     PositionIncrementAttribute
 
-import utils 
+import utils
+
+from query_parser import Parser
+custom_parser = None
 
 
 #what need to do 
@@ -52,6 +55,7 @@ class IsolationSimilarity(DefaultSimilarity):
 def initJvm():
     #Init the jvm
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    custom_parser = new Parser()
     print 'lucene', lucene.VERSION
 
 def config():
@@ -79,13 +83,13 @@ def printWrappedAnalyzer(aWrapper):
 
 #---end config---
 
-def run(command,searcher, aWrapper):
+def run(command, searcher, aWrapper):
 
     print
 
     if command == '':
         return
-    
+
     #debug
     #print "Searching for:"+command
 
@@ -99,9 +103,10 @@ def run(command,searcher, aWrapper):
     #query = MultiFieldQueryParser.parse(parser, command_jarr)
 
     #创建QueryParser对象 默认的搜索域为title 
-    parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper) 
+    #parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
     #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
-    query = parser.parse(command)
+    #query = parser.parse(command)
+    query = custom_parser.parse(command)
 
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
