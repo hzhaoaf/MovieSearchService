@@ -10,5 +10,6 @@ urlpatterns = patterns('search.views',
     url(r'(?P<subject_id>\d+)/$', 'detail'),
     url(r'custom_search/$', 'search_by_custom_parser'),
     url(r'search/$', 'search'),
+    url(r'custom_search/$', 'search_by_custom_parser'),
 
 )

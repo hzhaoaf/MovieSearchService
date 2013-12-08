@@ -110,7 +110,6 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     query = parser.parse(command)
     if debug:
         print query.toString().encode('utf8')
-
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
     #printWrappedAnalyzer(aWrapper)
