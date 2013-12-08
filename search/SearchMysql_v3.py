@@ -82,7 +82,7 @@ def printWrappedAnalyzer(aWrapper):
 
 #---end config---
 
-def run(command, searcher, aWrapper):
+def run(command, searcher, aWrapper, use_custom_parser=False):
 
     print
 
@@ -101,11 +101,13 @@ def run(command, searcher, aWrapper):
     #parser = MultiFieldQueryParser(Version.LUCENE_CURRENT, JArray('string')(['subject_id','summary']),analyzer)
     #query = MultiFieldQueryParser.parse(parser, command_jarr)
 
-    #创建QueryParser对象 默认的搜索域为title 
-    #parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
-    #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
-    #query = parser.parse(command)
-    query = custom_parser.parse(command)
+    if use_custom_parser:
+        query = custom_parser.parse(command)
+    else:
+        #创建QueryParser对象 默认的搜索域为title 
+        parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
+        #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
+        query = parser.parse(command)
 
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
