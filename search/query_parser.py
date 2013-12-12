@@ -9,7 +9,7 @@ module_dir = os.path.dirname(__file__)  # get current directory
 #(field, weight)
 person_fields_weight = [('directors', '3.0'),
                         ('casts', '3.0'),
-                        ('writers', '1.0')
+                        #('writers', '1.0')
                         ]
 non_person_fields_weight = [('title', '3.0'),
                             ('original_title', '3.0'),
