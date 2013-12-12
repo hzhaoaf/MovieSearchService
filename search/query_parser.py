@@ -30,12 +30,14 @@ class Parser:
         导入从数据库成生成全部的人名和非人名的术语集合，用来判断用户的术语所属基本类型
 
         '''
-        person_terms_path = os.path.join(module_dir, 'person_terms.txt')
-        lines = open(person_terms_path, 'r').readlines()
-        self.person_terms = set([l.strip() for l in lines])
-        non_person_terms_path = os.path.join(module_dir, 'non_person_terms.txt')
-        lines = open(non_person_terms_path, 'r').readlines()
-        self.non_person_terms = set([l.strip() for l in lines])
+        fields_terms_path = os.path.join(module_dir, 'fields_terms.txt')
+        lines = open(fields_terms_path, 'r').readlines()
+        terms = [tuple(l.strip().split('<￥>')) for l in lines if l]
+        person_terms_types = person_fields_weight.keys()
+        non_person_terms_types = non_person_fields_weight.keys()
+
+        self.person_terms = {r[0]: r[1] for r in temrs if r[1] in person_terms_types}
+        self.non_person_terms = {r[0]: r[1] for r in temrs if r[1] in non_person_terms_types}
 
     def parse(self, raw_str):
         terms = raw_str.split()
