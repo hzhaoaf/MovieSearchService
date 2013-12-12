@@ -82,7 +82,7 @@ def printWrappedAnalyzer(aWrapper):
 
 #---end config---
 
-def run(command, searcher, aWrapper, use_custom_parser=False):
+def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
 
     print
 
@@ -101,13 +101,15 @@ def run(command, searcher, aWrapper, use_custom_parser=False):
     #parser = MultiFieldQueryParser(Version.LUCENE_CURRENT, JArray('string')(['subject_id','summary']),analyzer)
     #query = MultiFieldQueryParser.parse(parser, command_jarr)
 
-    if use_custom_parser:
-        query = custom_parser.parse(command)
-    else:
-        #创建QueryParser对象 默认的搜索域为title 
-        parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
-        #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
-        query = parser.parse(command)
+    command = custom_parser.parse(command) if use_custom_parser else command
+    if debug:
+        print command
+    #创建QueryParser对象 默认的搜索域为title 
+    parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
+    #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
+    query = parser.parse(command)
+    if debug:
+        print query.toString().encode('utf8')
 
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
@@ -136,7 +138,8 @@ def run(command, searcher, aWrapper, use_custom_parser=False):
     #query = QueryParser(Version.LUCENE_CURRENT, FIELD,analyzer).parse(command)
 
     #scoreDocs = searcher.search(query, 50,sort).scoreDocs
-    scoreDocs = searcher.search(query, 50).scoreDocs
+    retN = 50 if not debug else 20
+    scoreDocs = searcher.search(query, retN).scoreDocs
 
 
 
@@ -188,9 +191,10 @@ if __name__ == '__main__':
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     directory = SimpleFSDirectory(File(os.path.join(base_dir, INDEX_DIR)))
     searcher = IndexSearcher(DirectoryReader.open(directory))
-    command = sys.argv[1]
+    #command = 'title:中国^2.0 title:先生^1.0'
+    command = u'张艺谋 章子怡'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
-    retList = run(command,searcher, aWrapper)
+    retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)
     printResult(retList)
     del searcher
