@@ -33,11 +33,11 @@ class Parser:
         fields_terms_path = os.path.join(module_dir, 'fields_terms.txt')
         lines = open(fields_terms_path, 'r').readlines()
         terms = [tuple(l.strip().split('<￥>')) for l in lines if l]
-        person_terms_types = person_fields_weight.keys()
-        non_person_terms_types = non_person_fields_weight.keys()
+        person_terms_types = [r[0] for r in person_fields_weight]
+        non_person_terms_types = [r[0] for r in non_person_fields_weight]
 
-        self.person_terms = {r[0]: r[1] for r in temrs if r[1] in person_terms_types}
-        self.non_person_terms = {r[0]: r[1] for r in temrs if r[1] in non_person_terms_types}
+        self.person_terms = {r[0]: r[1] for r in terms if r[1] in person_terms_types}
+        self.non_person_terms = {r[0]: r[1] for r in terms if r[1] in non_person_terms_types}
 
     def parse(self, raw_str):
         terms = raw_str.split()

@@ -186,15 +186,15 @@ def printResult(retList):
 
 if __name__ == '__main__':
     debug = True
-    if debug:
-        INDEX_DIR = '~/lucene_index'
+    #if debug:
+    #    INDEX_DIR = '~/lucene_index'
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     #print 'lucene', lucene.VERSION
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     directory = SimpleFSDirectory(File(os.path.join(base_dir, INDEX_DIR)))
     searcher = IndexSearcher(DirectoryReader.open(directory))
     #command = 'title:中国^2.0 title:先生^1.0'
-    command = u'张艺谋 章子怡'
+    command = u'张艺谋'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
     retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)
