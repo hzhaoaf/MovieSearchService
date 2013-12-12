@@ -17,7 +17,7 @@ import operator
 
 
 def simlifyRetDict(retDict):
-	reservedList = ['subject_id','title','directors','summary','image_small','score','boost']
+	reservedList = ['subject_id','title','directors','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost']
 	keyList = retDict.keys()
 	for eachKey in keyList:
 		if eachKey not in reservedList:
@@ -420,7 +420,7 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 	for eachDict in movieDictList:
 		boost = 1 # 初始boost
 		times = 1 # 倍数
-		print 
+
 		rating_av, rating_total, popularity, trends, impressive = basicFeaturesOfMovie(eachDict,maxDict)
 
 		#process tags

@@ -89,6 +89,7 @@ SPAN = 500
 TAGS_AVER_LEN = 100
 TAG_NUM_FACTOR = 0.0001 #so a tag marked by 16000 people will get a times of 1.6
 
+ADJ_NUM = 5
 
 #表示对doc的加权范围
 DOC_BOOST_RANGE = [1,10]
@@ -101,6 +102,8 @@ NAME = 1
 #flags
 DICT = 0
 SCOREDOCS = 1
+
+
 
 
 

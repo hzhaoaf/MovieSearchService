@@ -8,7 +8,7 @@ urlpatterns = patterns('search.views',
     # Examples:
     url(r'index/$', 'index'),
     url(r'(?P<subject_id>\d+)/$', 'detail'),
-    url(r'search/$', 'search'),
     url(r'custom_search/$', 'search_by_custom_parser'),
+    url(r'search/$', 'search'),
 
 )
