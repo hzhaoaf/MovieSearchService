@@ -185,6 +185,9 @@ def printResult(retList):
         #print each['subject_id'] + ':' +each['title'] + 'boost->'+ str(each['boost'])+'|| score:'+str(each['score']) + ' ^'+each['user_tags']+'\n'
 
 if __name__ == '__main__':
+    debug = True
+    if debug:
+        INDEX_DIR = '~/lucene_index'
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     #print 'lucene', lucene.VERSION
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
