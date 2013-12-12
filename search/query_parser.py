@@ -36,8 +36,8 @@ class Parser:
         person_terms_types = [r[0] for r in person_fields_weight]
         non_person_terms_types = [r[0] for r in non_person_fields_weight]
 
-        self.person_terms = {r[0]: r[1] for r in terms if r[1] in person_terms_types}
-        self.non_person_terms = {r[0]: r[1] for r in terms if r[1] in non_person_terms_types}
+        self.person_terms = {r[0].decode('utf8'): r[1] for r in terms if r[1] in person_terms_types}
+        self.non_person_terms = {r[0].decode('utf8'): r[1] for r in terms if r[1] in non_person_terms_types}
 
     def parse(self, raw_str):
         terms = raw_str.split()
@@ -73,7 +73,7 @@ class Parser:
 def test_parser():
     parser = Parser()
     term = u'张艺谋'
-    print parser.person_terms()
+    print term in parser.person_terms
 
 if __name__ == '__main__':
     test_parser()
