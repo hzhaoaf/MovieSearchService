@@ -70,3 +70,10 @@ class Parser:
         return query_str
 
 
+def test_parser():
+    parser = Parser()
+    term = u'张艺谋'
+    print parser.person_terms()
+
+if __name__ == '__main__':
+    test_parser()
