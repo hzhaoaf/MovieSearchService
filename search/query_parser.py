@@ -7,13 +7,13 @@ import os
 module_dir = os.path.dirname(__file__)  # get current directory
 
 #(field, weight)
-person_fields_weight = [('directors', '1.0'),
-                        ('casts', '1.0'),
+person_fields_weight = [('directors', '3.0'),
+                        ('casts', '3.0'),
                         ('writers', '1.0')
                         ]
-non_person_fields_weight = [('title', '1.0'),
-                            ('original_title', '1.0'),
-                            ('aka', '1.0'),
+non_person_fields_weight = [('title', '3.0'),
+                            ('original_title', '3.0'),
+                            ('aka', '2.0'),
                             ('countries', '0.5'),
                             ('user_tags', '1.0'),
                             ('summary', '1.0')
@@ -52,7 +52,8 @@ class Parser:
         '''
 
         def generate_query_by_fields(term, field_info):
-            lines = ['%s: %s^%s' % (r[0], term, r[1]) for r in field_info]
+            lines = ['%s:%s^%s' % (r[0], term, r[1]) for r in field_info]
+            #lines = ['%s:%s' % (r[0], term) for r in field_info]
             return ' '.join(lines)
 
 

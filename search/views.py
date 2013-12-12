@@ -95,7 +95,7 @@ def search(request):
 
 def search_by_custom_parser(request):
     #try:
-    #return HttpResponse(request)
+    #return HttpResponse("test custom parser")
     if request.method == 'GET':
         # extract the specified get parameters
         #command = urlquote(request.get['command']).decode('utf8')
@@ -115,7 +115,7 @@ def search_by_custom_parser(request):
 
         awrapper = IndexMysql.CreateAWrapper()
         searcher,analyzer = searchmysql.config()
-        retlist = searchmysql.run(command, searcher, awrapper)
+        retlist = searchmysql.run(command, searcher, awrapper, use_custom_parser=True)
 
         anscount = len(retlist)
 
