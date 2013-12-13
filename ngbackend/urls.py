@@ -23,6 +23,10 @@ urlpatterns = patterns('',
     # Url conf for appTest
     url(r'^appTest/$', 'jsonTest.views.appTest', name='apptest'),
 
+    # Url conf for moviecrawler
+    url(r'^addmoviebyid/$', 'moviecrawler.views.addMovieByID', name='addmovie'),
+    url(r'^hellomoviecrawler/$', 'moviecrawler.views.helloMovieCrawler', name='hellocrawler'),
+
     # Url conf for search
     #url(r'^search/$', 'search.views.search', name='search'),
     #url(r'^search/$', 'ngbackend.search.search', name='search'),
