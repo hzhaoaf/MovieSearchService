@@ -7,16 +7,16 @@ import os
 module_dir = os.path.dirname(__file__)  # get current directory
 
 #(field, weight)
-person_fields_weight = [('directors', '3.0'),
-                        ('casts', '3.0'),
+person_fields_weight = [('directors', '10.0'),
+                        ('casts', '5.0'),
                         #('writers', '1.0')
                         ]
-non_person_fields_weight = [('title', '3.0'),
-                            ('original_title', '3.0'),
-                            ('aka', '2.0'),
+non_person_fields_weight = [('title', '10.0'),
+                            ('original_title', '10.0'),
+                            ('aka', '7.0'),
                             ('countries', '0.5'),
-                            ('user_tags', '1.0'),
-                            ('summary', '1.0')
+                            #('user_tags', '1.0'),
+                            ('summary', '5.0')
                             ]
 
 class Parser:
@@ -72,7 +72,7 @@ class Parser:
 
 def test_parser():
     parser = Parser()
-    term = u'张艺谋'
+    term = u'张艺谋 章子怡'
     print term in parser.person_terms
 
 if __name__ == '__main__':
