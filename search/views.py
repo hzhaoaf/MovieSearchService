@@ -13,7 +13,7 @@ import SearchMysql_v3 as searchmysql
 #from search import SearchMysql_v3 as searchmysql
 import IndexMysql
 #from search import IndexMysql
-from models import MovieItems, ShortComments
+from models import MovieItems, ShortComments, MovieAwards
 #from search.models import MovieItems
 '''
 interface for querying from app
@@ -170,8 +170,10 @@ def detail(request, subject_id):
     movie_item = movie_items[0]
     ret = model_to_dict(movie_item)
     comments = get_comments_by_id(subject_id)
+    awards = get_awards_by_id(subject_id)
     #recommended_movies = get_recommended_movies(subject_id)
     ret['comments'] = comments
+    ret['awards'] = awards
     return HttpResponse(simplejson.dumps(ret, ensure_ascii = False), content_type="application/json")
 
 def get_comments_by_id(subject_id, retN=20):
@@ -179,6 +181,11 @@ def get_comments_by_id(subject_id, retN=20):
     comments = [model_to_dict(c) for c in comments]
     comments = sorted(comments, key=lambda d: d['comment_date'], reverse=True)
     return comments[:retN]
+
+def get_awards_by_id(subject_id):
+    awards = list(MovieAwards.objects.filter(subject_id=subject_id))
+    awards = [model_to_dict(a) for a in awards]
+    return awards
 
 def get_recommended_movies(subject_id):
     pass
