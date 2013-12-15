@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from django.utils.http import urlquote
 import urllib
 
+import json
 #import sys
 #sys.path.append('./')
 import SearchMysql_v3 as searchmysql
@@ -186,12 +187,17 @@ def get_comments_by_id(subject_id, retN=20):
 def get_awards_by_id(subject_id):
     awards = list(MovieAwards.objects.filter(subject_id=subject_id))
     awards = [model_to_dict(a) for a in awards]
+    awards = awards[0] if awards else []
+    #if awards:
+    #    awards['award_items'] = json.loads(awards['award_items'])
+    #for k, v in awards.items():
+    #    awards[k] = v.encode('utf8')
     return awards
 
 def get_recommended_movies(others_like_movies):
     if not others_like_movies:
         return []
-    movies = others_like_movies.split('￥')
+    movies = others_like_movies.split(u'￥')
     movies = [m.split('<>') for m in movies]
     ids = [m[0] for m in movies]
     id2urls = dict(MovieItems.objects.filter(subject_id__in=ids).values_list('subject_id', 'image_small'))
