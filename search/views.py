@@ -176,7 +176,7 @@ def detail(request, subject_id):
 
 def get_comments_by_id(subject_id, retN=20):
     comments = list(ShortComments.objects.filter(subject_id=subject_id))
-    comments = [model_to_item(c) for c in comments]
+    comments = [model_to_dict(c) for c in comments]
     comments = sorted(comments, key=lambda d: d['comment_date'], reverse=True)
     return comments[:retN]
 
