@@ -144,3 +144,14 @@ class MovieItems(models.Model):
     class Meta:
         db_table = u'movie_items'
 
+class ShortComments(models.Model):
+    comment_id = models.IntegerField(primary_key=True)
+    user_name = models.CharField(max_length=150, blank=True)
+    user_comment = models.CharField(max_length=1500, blank=True)
+    comment_date = models.CharField(max_length=150, blank=True)
+    subject_id = models.CharField(max_length=150)
+    vote_number = models.CharField(max_length=30, blank=True)
+    user_star = models.CharField(max_length=30, blank=True)
+    class Meta:
+        db_table = u'short_comments'
+
