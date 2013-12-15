@@ -39,16 +39,19 @@ class MovieItems(models.Model):
     genres = models.CharField(max_length=150, blank=True)
     current_season = models.IntegerField(null=True, blank=True)
     collect_count = models.IntegerField(null=True, blank=True)
-    casts = models.CharField(max_length=90, blank=True)
+    casts = models.CharField(max_length=6000, blank=True)
     countries = models.CharField(max_length=60, blank=True)
     original_title = models.CharField(max_length=300, blank=True)
     summary = models.TextField(blank=True)
     summary_segmentation = models.TextField(blank=True)
     subtype = models.CharField(max_length=30, blank=True)
-    directors = models.CharField(max_length=60, blank=True)
+    directors = models.CharField(max_length=3000, blank=True)
     comments_count = models.IntegerField(null=True, blank=True)
     ratings_count = models.IntegerField(null=True, blank=True)
     aka = models.CharField(max_length=150, blank=True)
+    user_tags = models.CharField(max_length=1500, blank=True)
+    others_like = models.CharField(max_length=3000, blank=True)
+    adjs = models.TextField()
     class Meta:
         db_table = u'movie_items'
 
