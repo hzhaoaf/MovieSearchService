@@ -171,9 +171,10 @@ def detail(request, subject_id):
     ret = model_to_dict(movie_item)
     comments = get_comments_by_id(subject_id)
     awards = get_awards_by_id(subject_id)
-    #recommended_movies = get_recommended_movies(subject_id)
+    recommended_movies = get_recommended_movies(ret['others_like'])
     ret['comments'] = comments
     ret['awards'] = awards
+    ret['others_like'] = recommended_movies
     return HttpResponse(simplejson.dumps(ret, ensure_ascii = False), content_type="application/json")
 
 def get_comments_by_id(subject_id, retN=20):
@@ -187,6 +188,21 @@ def get_awards_by_id(subject_id):
     awards = [model_to_dict(a) for a in awards]
     return awards
 
-def get_recommended_movies(subject_id):
-    pass
+def get_recommended_movies(others_like_movies):
+    if not others_like_movies:
+        return []
+    movies = others_like_movies.split('￥')
+    movies = [m.split('<>') for m in movies]
+    ids = [m[0] for m in movies]
+    id2urls = dict(MovieItems.objects.filter(subject_id__in=ids).values_list('subject_id', 'image_small'))
+    id2names = {m[0]: m[1] for m in movies}
+    recommended_movies = []
+    for id_, name in id2names.items():
+        item = {}
+        url = id2urls.get(id_, '')
+        item['subject_id'] = id_
+        item['name'] = name
+        item['image_url'] = url
+        recommended_movies.append(item)
+    return recommended_movies
 
