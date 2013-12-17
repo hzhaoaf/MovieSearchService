@@ -4,6 +4,8 @@
 from django.http import HttpResponse
 from django.utils import simplejson
 
+import getMovieInfoByIdWrapper
+
 def helloMovieCrawler(request):
 	return HttpResponse("Hello, NG Guy! Our movie crawler service is working!")
 
@@ -18,5 +20,12 @@ def addMovieByID(request):
             retJson['msg'] = 'Good boy, you are trying to add a new movie:-)'
 	    retJson['subjectID'] = subjectID
 
-	return HttpResponse(simplejson.dumps(retJson, ensure_ascii = False), content_type="application/json")
+            try:
+                getMovieInfoByIdWrapper.getAllMovieInfoBySubjectIDWrapper(subjectID)
+		retJson['result'] = 'Success'
+            except Exception as e:
+                retJson['result'] = 'Fail'
+                retJson['reason'] =  str(e)
+
+	    return HttpResponse(simplejson.dumps(retJson, ensure_ascii = False), content_type="application/json")
 
