@@ -3,7 +3,11 @@
 '''
     这个模块对用户输入的词进行解析，生成适合我们的query形式
 '''
-import os
+import os, sys
+sys.path.append('../')
+
+from ltp_service import ltpservice
+
 module_dir = os.path.dirname(__file__)  # get current directory
 
 #(field, weight)
@@ -23,6 +27,7 @@ class Parser:
 
     def __init__(self):
         self.load_film_terms()
+        self.ltp_client = ltpservice.LTPService("%s:%s" % ('zhaoh@cslt.riit.tsinghua.edu.cn', '6Ts8ZDJK'))
 
     def load_film_terms(self):
         '''导入离线生成的terms
@@ -69,11 +74,15 @@ class Parser:
             query_str = generate_query_by_fields(term, person_fields_weight + non_person_fields_weight)
         return query_str
 
+    def test_ltp(self, raw_str):
+        result = self.ltp_client.analysis(raw_str, ltpservice.LTPOption.PARSER)
+        print result.tostring()
 
 def test_parser():
     parser = Parser()
-    term = u'张艺谋 章子怡'
-    print term in parser.person_terms
+    #term = u'张艺谋 章子怡'
+    #print term in parser.person_terms
+    parser.test_ltp('很多人觉得剧情很矫情')
 
 if __name__ == '__main__':
     test_parser()
