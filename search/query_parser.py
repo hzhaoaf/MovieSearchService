@@ -82,13 +82,13 @@ class Parser:
             else:
                 #这个时候很有可能是一句话，就引入ltp进行分词
                 #import pdb;pdb.set_trace()
-                import time
-                start = time.time()
+                #import time
+                #start = time.time()
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
                 adjs = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
                 #能找出形容词则生成形容词域，否则直接返回term
-                print 'get adjs cost %.2fs' % (time.time() - start)
+                #print 'get adjs cost %.2fs' % (time.time() - start)
                 query_str = ' '.join(['adjs:%s' % a for a in adjs]) if adjs else term
             return query_str
         except Exception as e:
