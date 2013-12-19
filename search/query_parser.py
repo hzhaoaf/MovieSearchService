@@ -8,7 +8,7 @@ sys.path.append('../')
 
 from ltp_service import ltpservice
 
-from tools.generate_adjs_from_dependency_res import parse_XML
+from tools.xml_processor import parse_XML
 
 module_dir = os.path.dirname(__file__)  # get current directory
 
