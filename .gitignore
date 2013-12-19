@@ -39,3 +39,5 @@ nosetests.xml
 *.py~
 *.*~
 *.swp
+
+*.html
