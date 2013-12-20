@@ -89,7 +89,10 @@ class Parser:
                 adjs = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
-                query_str = ' '.join(['adjs:%s' % a for a in adjs]) if adjs else term
+                if adjs:
+                    query_str = ' '.join(['adjs:%s' % a for a in adjs])
+                else:
+                    query_str = generate_query_by_fields(term, person_fields_weight + non_person_fields_weight)
             return query_str
         except Exception as e:
             print e
