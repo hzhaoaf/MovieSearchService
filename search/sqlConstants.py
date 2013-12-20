@@ -1,4 +1,4 @@
-#!usr/bin/bash
+#!usr/bin/python 
 #coding:utf-8
 
 RATING_MAX          =0  
@@ -35,6 +35,7 @@ RATINGS_COUNT       =30 #31 多少人打分
 AKA                 =31 #32
 USER_TAGS  		    =32 #31
 OTHERS_LIKE         =33 #32
+ADJS                =34 #33
 
 
 fields_name_list = \
@@ -87,12 +88,15 @@ delim_uo = '<>'
 TAGS_NUM = 20
 SPAN = 500
 TAGS_AVER_LEN = 100
+ADJS_AVER_LEN = 20
 TAG_NUM_FACTOR = 0.0001 #so a tag marked by 16000 people will get a times of 1.6
+ADJ_NUM_FACTOR = 0.1 # so a adj with a number of 16 will get a times of 1.6
 
 ADJ_NUM = 5
+SUMMARY_ADJ_BOOST = 4
 
 #表示对doc的加权范围
-DOC_BOOST_RANGE = [1,10]
+DOC_BOOST_RANGE = [1,8]
 
 # for test 
 ID = 0
@@ -102,6 +106,23 @@ NAME = 1
 #flags
 DICT = 0
 SCOREDOCS = 1
+
+#这个数字越接近当前时间，时间的影响就越大,越近的电影加权越大
+NOW = 20500000
+
+#firstMovieTime
+firstMovieTime = 18950000 #工厂大门
+
+#统计粒度
+COMMENTS_C_LIDU = 5
+RATINGS_C_LIDU = 10
+PROB_LIDU = 10
+DO_C_LIDU = 10
+COLLECT_C_LIDU = 10
+DCW_LIDU = 10
+TR_LIDU = 10
+WISH_C_LIDU = 10
+REVIEWS_C_LIDU = 3
 
 
 
