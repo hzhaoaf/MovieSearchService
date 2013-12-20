@@ -35,7 +35,7 @@ def search(request):
         
         aWrapper = IndexMysql.CreateAWrapper()
         searcher,analyzer = SearchMysql.config()
-        retList = SearchMysql.run(command,searcher,aWrapper)
+        retList = SearchMysql.run(command,searcher,aWrapper, use_custom_parser=True)
 
         ansCount = len(retList)
 
