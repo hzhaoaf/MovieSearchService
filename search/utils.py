@@ -15,6 +15,14 @@ from time import sleep
 from datetime import *
 import operator
 
+def str_to_unicode(raw_str):
+    '''
+        将str转换为unicode str，当raw_str已经是unicode，则不用转了
+    '''
+    if isinstance(raw_str, unicode):
+        return raw_str
+    else:
+        return raw_str.decode('utf8')
 
 def simlifyRetDict(retDict):
 	reservedList = ['subject_id','title','directors','year','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost','raw_adjs']
@@ -464,7 +472,7 @@ def calcBoostProb(doc_row,maxDict,dateStr):
 def getFieldValueInCommand(command,field):
 	#usage: return a Value of field in command in the type of list
 	#！！！！！！！！！！！！！服务器的时候 不要下面这句话
-	command = unicode(command,'utf-8')
+	command = str_to_unicode(command)
 	offset = command.find(field)
 	if  offset >= 0: #说明使用了field搜索 
 		offset = offset + len(field) + 1 #get to the position after the ':' of the field
