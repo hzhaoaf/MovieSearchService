@@ -20,7 +20,7 @@ module_dir = os.path.dirname(__file__)  # get current directory
 basic_fields_weight = {'directors': '10.0',
                        'casts': '10.0',
                        'title': '10.0',
-                       'summary': '2.0'
+                       #'summary': '2.0'
                        }
 #一旦检查到该term也有custom_fields中的type，需要增加该域的搜索
 custom_fields_weight = {'original_title': '10.0',
@@ -95,11 +95,22 @@ class Parser:
                 #start = time.time()
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
-                adjs = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
+                adjs, persons = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
+                print persons
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
-                if adjs:
-                    query_str = ' '.join(['adjs:%s' % a for a in adjs])
+                if not adjs and not persons:
+                    return query_str
+                else:
+                    query_str = u''
+                    if adjs:
+                        query_str += ''.join(['adjs:%s ' % a for a in adjs])
+                    if persons:
+                        #for person in persons:
+                        #    types = self.term_types.get(person, [])
+                        #    person_fields = 
+                        query_str += ''.join(['direcors:%s^10.0 casts:%s^10.0 ' % (p, p) for p in persons])
+
             return query_str
         except Exception as e:
             print e

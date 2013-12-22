@@ -7,7 +7,8 @@ OK_SINGE_WORDS = [u'老', u'好', u' 烂', u'美', u'滥', u'冷', u'棒', u'苦
 
 def parse_XML(xml_str, processing_type=1):
     '''
-        从字符串中生成xml文档, 解析xml文档，获得需要的形容词,
+        从字符串中生成xml文档,
+        解析xml文档，获得需要的形容词,以及识别出可能存在的人名
         type--
     '''
     adjs = []
@@ -27,6 +28,9 @@ def parse_XML(xml_str, processing_type=1):
         adjs = [w.attrib.get('cont') for w in words if w.attrib.get('pos') == 'a' and w.attrib.get('relate') != 'ADV']
         adjs = [a for a in adjs if len(a) > 1 or a in OK_SINGE_WORDS]
 
-    return adjs
+    words = root.findall('.//word[@pos="nh"]')
+    persons = [w.attrib.get('cont') for w in words]
+
+    return adjs, persons
 
 
