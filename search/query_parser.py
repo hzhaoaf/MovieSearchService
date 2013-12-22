@@ -25,8 +25,8 @@ basic_fields_weight = {'directors': '10.0',
 #一旦检查到该term也有custom_fields中的type，需要增加该域的搜索
 custom_fields_weight = {'original_title': '10.0',
                         'aka': '10.0',
-                        'countries': '15.0',
-                        'user_tags': '15.0',
+                        'countries': '150.0',
+                        'user_tags': '150.0',
                         'year': '20.0',
                         }
 
