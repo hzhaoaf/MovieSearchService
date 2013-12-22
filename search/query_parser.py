@@ -96,7 +96,7 @@ class Parser:
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
                 adjs, persons = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
-                print persons
+                #print persons
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
                 if not adjs and not persons:
@@ -104,12 +104,12 @@ class Parser:
                 else:
                     query_str = u''
                     if adjs:
-                        query_str += ''.join(['adjs:%s ' % a for a in adjs])
+                        query_str += ''.join(['adjs:%s^15.0 user_tags:%s^15.0' % (a, a) for a in adjs])
                     if persons:
                         #for person in persons:
                         #    types = self.term_types.get(person, [])
                         #    person_fields = 
-                        query_str += ''.join(['direcors:%s^10.0 casts:%s^10.0 ' % (p, p) for p in persons])
+                        query_str += ''.join(['direcors:%s^10.0 casts:%s^10.0 title:%s^5.0' % (p, p, p) for p in persons])
 
             return query_str
         except Exception as e:
