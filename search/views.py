@@ -188,8 +188,8 @@ def get_awards_by_id(subject_id):
     awards = list(MovieAwards.objects.filter(subject_id=subject_id))
     awards = [model_to_dict(a) for a in awards]
     awards = awards[0] if awards else []
-    #if awards:
-    #    awards['award_items'] = json.loads(awards['award_items'])
+    if awards:
+        awards['award_items'] = json.loads(awards['award_items'])
     #for k, v in awards.items():
     #    awards[k] = v.encode('utf8')
     return awards
