@@ -217,7 +217,8 @@ def get_navigation_list(request):
         navi_file = os.path.join(module_dir, 'data/navi_search.txt')
         lines = open(navi_file, 'r').readlines()
         sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
-        return HttpResponse(simplejson.dumps(sentences, ensure_ascii = False), content_type="application/json")
+        res = {'data': sentences, 'count': len(sentences)}
+        return HttpResponse(simplejson.dumps(res, ensure_ascii = False), content_type="application/json")
     except Exception as e:
         return HttpResponse("发生异常: %s，老纪你自己解决" % e, content_type="application/json")
 
