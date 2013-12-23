@@ -42,6 +42,15 @@ def unicode_to_str(raw_str):
     elif isinstance(raw_str, unicode):
         return raw_str.encode('utf8')
 
+def str_to_unicode(raw_str):
+    '''
+        将str转换为unicode str，当raw_str已经是unicode，则不用转了
+    '''
+    if isinstance(raw_str, unicode):
+        return raw_str
+    else:
+        return raw_str.decode('utf8')
+
 class Parser:
 
     def __init__(self):
@@ -63,9 +72,11 @@ class Parser:
             #国外的中文译名中存在·，需要split之后，以单个人名来搜索
             terms = term_str.split('·')
             for term in terms:
-                self.term_types.setdefault(term, []).append(type_)
+                if term:
+                    self.term_types.setdefault(str_to_unicode(term), []).append(type_)
 
     def parse(self, raw_str):
+        #import pdb;pdb.set_trace()
         terms = raw_str.split()
         query = ''
         for term in terms:
