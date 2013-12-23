@@ -11,5 +11,6 @@ urlpatterns = patterns('search.views',
     url(r'custom_search/$', 'search_by_custom_parser'),
     url(r'search/$', 'search'),
     url(r'custom_search/$', 'search_by_custom_parser'),
+    url(r'navigation_list/$', 'get_navigation_list'),
 
 )

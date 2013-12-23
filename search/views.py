@@ -212,3 +212,11 @@ def get_recommended_movies(others_like_movies):
         recommended_movies.append(item)
     return recommended_movies
 
+def get_navigation_list(request):
+    try:
+        lines = open('data/navi_search.txt', 'r').readlines()
+        sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
+        return HttpResponse(simplejson.dumps(sentences, ensure_ascii = False), content_type="application/json")
+    except Exception as e:
+        return HttpResponse("发生异常，老纪你自己解决", content_type="application/json")
+
