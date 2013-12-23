@@ -17,17 +17,22 @@ module_dir = os.path.dirname(__file__)  # get current directory
 
 #(field, weight)
 #每个query term默认都有这几个search field，以及权重
-basic_fields_weight = {'directors': '10.0',
-                       'casts': '10.0',
-                       'title': '10.0',
+basic_fields_weight = {'directors': '1.0',
+                       'casts': '1.0',
+                       'title': '1.0',
                        #'summary': '2.0'
                        }
-#一旦检查到该term也有custom_fields中的type，需要增加该域的搜索
-custom_fields_weight = {'original_title': '10.0',
-                        'aka': '10.0',
-                        'countries': '150.0',
-                        'user_tags': '150.0',
-                        'year': '20.0',
+#一旦检查到该term也有boosting_fields中的type，需要增加该域的搜索
+boosting_fields_weight = {
+                        'directors': '10.0',
+                        'casts': '10.0',
+                        'title': '10.0',
+                        'original_title': '5.0',
+                        'aka': '5.0',
+                        'countries': '50.0',
+                        'user_tags': '50.0',
+                        'year': '10.0',
+                        'adjs': '15.0',
                         }
 
 def unicode_to_str(raw_str):
@@ -59,8 +64,6 @@ class Parser:
             for term in terms:
                 self.term_types.setdefault(term, []).append(type_)
 
-
-
     def parse(self, raw_str):
         terms = raw_str.split()
         query = ''
@@ -71,8 +74,10 @@ class Parser:
     def parse_term(self, term):
         ''' 解析单个term
 
-            每个term默认输入title, casts, directors三个域，其他类型一旦击中，都需要增加该域，以及预设的权重
+            每个term默认输入title, casts, directors三个域，其他类型一旦击中，都需要增强该域，增加的强度由boosting_fields_weight控制
+            使用dict来管理整个过程中需要进行search的域
         '''
+        query_fields = basic_fields_weight
 
         def generate_query_by_fields(term, field_info):
             lines = ['%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
@@ -80,13 +85,15 @@ class Parser:
             return ''.join(lines)
 
         try:
-            query_str = generate_query_by_fields(term, basic_fields_weight)
             if term in self.term_types:
                 types = self.term_types[term]
-                custom_types = [t for t in types if t not in basic_fields_weight.keys()]
-                if custom_types:
-                    need_custom_fields = {ct: custom_fields_weight.get(ct, '1.0') for ct in custom_types}
-                    query_str += generate_query_by_fields(term, need_custom_fields)
+                for t in types:
+                    query_fields[t] = boosting_fields_weight.get(t, 5.0)
+
+                ##custom_types = [t for t in types if t not in basic_fields_weight.keys()]
+                #if custom_types:
+                #    need_custom_fields = {ct: custom_fields_weight.get(ct, '1.0') for ct in custom_types}
+                #    query_str += generate_query_by_fields(term, need_custom_fields)
 
             else:
                 #这个时候很有可能是一句话，就引入ltp进行分词
@@ -100,18 +107,15 @@ class Parser:
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
                 if not adjs and not persons:
-                    return query_str
+                    return generate_query_by_fields(term, query_fields)
                 else:
-                    query_str = u''
                     if adjs:
-                        query_str += ''.join(['adjs:%s^15.0 user_tags:%s^15.0' % (a, a) for a in adjs])
+                        query_fields['adjs'] = boosting_fields_weight['adjs']
                     if persons:
-                        #for person in persons:
-                        #    types = self.term_types.get(person, [])
-                        #    person_fields = 
-                        query_str += ''.join(['direcors:%s^10.0 casts:%s^10.0 title:%s^5.0' % (p, p, p) for p in persons])
+                        query_fields['directors'] = boosting_fields_weight['directors']
+                        query_fields['casts'] = boosting_fields_weight['casts']
 
-            return query_str
+            return generate_query_by_fields(term, query_fields)
         except Exception as e:
             print e
             return term
