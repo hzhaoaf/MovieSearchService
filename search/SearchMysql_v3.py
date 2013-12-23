@@ -198,6 +198,8 @@ if __name__ == '__main__':
     searcher = IndexSearcher(DirectoryReader.open(directory))
     #command = 'title:中国^2.0 title:先生^1.0'
     command = u'张艺谋'
+    command = u'陈凯歌'
+    command = u'韩国 情色'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
     retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)
