@@ -218,5 +218,5 @@ def get_navigation_list(request):
         sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
         return HttpResponse(simplejson.dumps(sentences, ensure_ascii = False), content_type="application/json")
     except Exception as e:
-        return HttpResponse("发生异常，老纪你自己解决", content_type="application/json")
+        return HttpResponse("发生异常: %s，老纪你自己解决" % e, content_type="application/json")
 
