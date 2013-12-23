@@ -101,15 +101,18 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     #parser = MultiFieldQueryParser(Version.LUCENE_CURRENT, JArray('string')(['subject_id','summary']),analyzer)
     #query = MultiFieldQueryParser.parse(parser, command_jarr)
 
+    if debug:
+        print 'before query parser: ', command
+
     command = custom_parser.parse(command) if use_custom_parser else command
     if debug:
-        print command
+        print 'after query parser: ', command
     #创建QueryParser对象 默认的搜索域为title 
     parser = QueryParser(Version.LUCENE_CURRENT, "title", aWrapper)
     #A PerFieldAnalyzerWrapper can be used like any other analyzer, for both indexing and query parsing. 
     query = parser.parse(command)
     if debug:
-        print query.toString().encode('utf8')
+        print 'after lucene QueryParser: ', query.toString().encode('utf8')
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
     #printWrappedAnalyzer(aWrapper)
