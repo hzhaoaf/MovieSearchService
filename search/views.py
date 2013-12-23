@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 from django.utils.http import urlquote
 import urllib
 
-import json
+import os, json
 #import sys
 #sys.path.append('./')
 import SearchMysql_v3 as searchmysql
@@ -22,7 +22,7 @@ use standard get request
 return json
 '''
 
-
+module_dir = os.path.dirname(__file__)  # get current directory
 searchmysql.initJvm()
 
 def index(request):
@@ -214,7 +214,8 @@ def get_recommended_movies(others_like_movies):
 
 def get_navigation_list(request):
     try:
-        lines = open('data/navi_search.txt', 'r').readlines()
+        navi_file = os.path.join(module_dir, 'data/navi_search.txt')
+        lines = open(navi_file, 'r').readlines()
         sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
         return HttpResponse(simplejson.dumps(sentences, ensure_ascii = False), content_type="application/json")
     except Exception as e:
