@@ -12,6 +12,7 @@ sys.path.append('../')
 from ltp_service import ltpservice
 
 from tools.xml_processor import parse_XML
+from tools.xml_processor import OK_SINGE_WORDS
 
 module_dir = os.path.dirname(__file__)  # get current directory
 
@@ -78,9 +79,10 @@ class Parser:
             使用dict来管理整个过程中需要进行search的域
         '''
         query_fields = basic_fields_weight
+        adjs_str, persons_str = u'', u''
 
         def generate_query_by_fields(term, field_info):
-            lines = ['%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
+            lines = [u'%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
             #lines = ['%s:%s' % (r[0], term) for r in field_info]
             return ''.join(lines)
 
@@ -110,14 +112,20 @@ class Parser:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
-                        query_fields['adjs'] = boosting_fields_weight['adjs']
-                    if persons:
-                        query_fields['directors'] = boosting_fields_weight['directors']
-                        query_fields['casts'] = boosting_fields_weight['casts']
+                        adjs_weights = {'adjs': '15.0'}
+                        adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
-            return generate_query_by_fields(term, query_fields)
+                    if persons:
+                        person_weights = {'directors': '10.0', 'casts': '10.0'}
+                        query_fields.pop('directors')
+                        query_fields.pop('casts')
+                        persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])
+
+            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str
         except Exception as e:
+            import traceback
             print e
+            print traceback.format_exc()
             return term
 
     def test_ltp(self, raw_str):
@@ -133,7 +141,7 @@ def test_parser(raw_str):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        raw_str = sys.argv[1]
+        raw_str = sys.argv[1].decode('utf8')
     else:
-        raw_str = u'我想看快乐的电影'
+        raw_str = u'我想看张艺谋的电影'
     test_parser(raw_str)
