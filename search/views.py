@@ -214,11 +214,18 @@ def get_recommended_movies(others_like_movies):
 
 def get_navigation_list(request):
     try:
-        navi_file = os.path.join(module_dir, 'data/navi_search.txt')
-        lines = open(navi_file, 'r').readlines()
-        sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
-        res = {'data': sentences, 'count': len(sentences)}
-        return HttpResponse(simplejson.dumps(res, ensure_ascii = False), content_type="application/json")
+        if request.method == 'GET':
+            type_ = int(urllib.unquote(request.GET['type']))#0表示引导list, 1表示九宫格需要的热门词汇
+            if type_ == 0:
+                navi_file = os.path.join(module_dir, 'data/navi_list.txt')
+            elif type_ == 1:
+                navi_file = os.path.join(module_dir, 'data/navi_blocks.txt')
+
+            lines = open(navi_file, 'r').readlines()
+            sentences = [l.strip().decode('utf8') for l in lines if l.strip()]
+            msg = u'引导list' if type_ == 0 else u'九宫格'
+            res = {'data': sentences, 'count': len(sentences), 'msg': msg}
+            return HttpResponse(simplejson.dumps(res, ensure_ascii = False), content_type="application/json")
     except Exception as e:
         return HttpResponse("发生异常: %s，老纪你自己解决" % e, content_type="application/json")
 
