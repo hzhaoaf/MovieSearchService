@@ -55,6 +55,7 @@ class Parser:
 
     def __init__(self):
         self.load_film_terms()
+        self.load_synonyms_adjs()
         self.ltp_client = ltpservice.LTPService("%s:%s" % ('zhaoh@cslt.riit.tsinghua.edu.cn', '6Ts8ZDJK'))
 
     def load_film_terms(self):
@@ -74,6 +75,22 @@ class Parser:
             for term in terms:
                 if term:
                     self.term_types.setdefault(str_to_unicode(term), []).append(type_)
+
+    def load_synonyms_adjs(self):
+        synonyms_adjs_path = os.path.join(module_dir, 'synonyms_adjs.txt')
+        lines = open(synonyms_adjs_path, 'r').readlines()
+        terms = [l.strip().split(':') for l in lines]
+        self.syn2ont = {str_to_unicode(t[0]): str_to_unicode(t[1]) for t in terms}
+        self.ont2syns = {}
+        for t in terms:
+            self.ont2syns.setdefault(str_to_unicode(t[1]), []).append(str_to_unicode(t[0]))
+
+    def get_synonyms_adjs(self, adj):
+        ont = self.syn2ont.get(adj)
+        if not ont:
+            return [adj]
+        adjs = self.ont2syns.get(ont, [adj])
+        return adjs
 
     def parse(self, raw_str):
         #import pdb;pdb.set_trace()
@@ -124,7 +141,12 @@ class Parser:
                 else:
                     if adjs:
                         adjs_weights = {'adjs': '15.0'}
-                        adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in adjs if len(a) > 1 or a in OK_SINGE_WORDS])
+                        syn_adjs = []
+                        #import pdb;pdb.set_trace()
+                        for adj in adjs:
+                            syn_adjs.extend(self.get_synonyms_adjs(adj))
+                        syn_adjs = set(syn_adjs)
+                        adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
                         person_weights = {'directors': '10.0', 'casts': '10.0'}
