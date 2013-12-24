@@ -23,7 +23,8 @@ from org.apache.lucene.search.similarities import BM25Similarity,DefaultSimilari
 import json
 import operator
 from sqlConstants import *
-from datetime import datetime, time
+from datetime import datetime, timedelta
+import time
 
 from org.apache.lucene.analysis import TokenStream
 from org.apache.lucene.analysis.tokenattributes import \
@@ -48,6 +49,12 @@ query_log_dir = os.path.join(module_dir, 'query_log')
 INDEX_DIR = "/home/env-shared/NGfiles/lucene_index"
 #the field name you want to search
 #this list correspond to the order of the field in the sql
+
+def unicode_to_str(raw_str):
+    if isinstance(raw_str, str):
+        return raw_str
+    elif isinstance(raw_str, unicode):
+        return raw_str.encode('utf8')
 
 
 class IsolationSimilarity(DefaultSimilarity):
@@ -92,9 +99,11 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
         os.mkdir(query_log_dir)
 
     search_start = time.time()
-    query_log_file = os.path.join(query_log_file, 'query_log.%s' % datetime.now().strftime('%Y-%m-%d'))
+    query_log_file = os.path.join(query_log_dir, 'query_log.%s' % datetime.now().strftime('%Y-%m-%d'))
     fw = open(query_log_file, 'a+')
-    fw.write('*********query-log,time=%s*************\n' % datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
+    cur_time = datetime.now()
+    cur_time = cur_time + timedelta(hours=8)#解决时区不在中国的问题
+    fw.write('\n*********query-log,time=%s*************\n' % cur_time.strftime('%Y-%m-%d %H:%M:%S') )
     fw.write('raw_str=%s\n' % unicode_to_str(command))
 
     if command == '':
@@ -188,10 +197,11 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
 
     #人工排序
     #retList = sorted(retList, key=operator.itemgetter('boost'), reverse=True)  
-    fw.write('\n***********return list(search/total=%.2fs/%.2fs)***************\n' % (cost_time, time.time() - search_start))
+    fw.write('***********return list(search/total=%.2fs/%.2fs)***************\n' % (cost_time, time.time() - search_start))
     for r in retList:
-        fw.write('%s: %s, boost->%s||score=%s\n' % (r['subject_id'], unicode(r['title']), r['boost'], r['score']))
-    fw.write('**************************************************************\n')
+        line = '%s: %s, boost->%s||score=%s\n' % (r['subject_id'], r['title'], r['boost'], r['score'])
+        fw.write(unicode_to_str(line))
+    fw.write('**************************************************************\n\n')
 
     del searcher
     return retList
