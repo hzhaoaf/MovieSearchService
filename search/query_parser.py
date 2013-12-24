@@ -140,7 +140,7 @@ class Parser:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
-                        adjs_weights = {'adjs': '15.0'}
+                        adjs_weights = {'adjs': '15.0', 'user_tags': '15.0'}
                         syn_adjs = []
                         #import pdb;pdb.set_trace()
                         for adj in adjs:
