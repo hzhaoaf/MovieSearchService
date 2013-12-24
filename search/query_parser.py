@@ -35,6 +35,7 @@ boosting_fields_weight = {
                         'year': '10.0',
                         'adjs': '15.0',
                         }
+use_synonymous = False
 
 def unicode_to_str(raw_str):
     if isinstance(raw_str, str):
@@ -145,7 +146,7 @@ class Parser:
                         #import pdb;pdb.set_trace()
                         for adj in adjs:
                             syn_adjs.extend(self.get_synonyms_adjs(adj))
-                        syn_adjs = set(syn_adjs)
+                        syn_adjs = set(syn_adjs) if use_synonymous else adjs
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
