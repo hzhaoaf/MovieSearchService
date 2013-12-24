@@ -162,7 +162,7 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     #query = QueryParser(Version.LUCENE_CURRENT, FIELD,analyzer).parse(command)
 
     #scoreDocs = searcher.search(query, 50,sort).scoreDocs
-    retN = 50 if not debug else 20
+    retN = 50
     start_time = time.time()
     scoreDocs = searcher.search(query, retN).scoreDocs
     cost_time = time.time() - start_time
@@ -204,7 +204,7 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     fw.write('**************************************************************\n\n')
 
     del searcher
-    return retList
+    return retList[:20] if debug else retList
 
 
 def printResult(retList):
@@ -226,10 +226,10 @@ if __name__ == '__main__':
     searcher = IndexSearcher(DirectoryReader.open(directory))
     #command = 'title:中国^2.0 title:先生^1.0'
     command = u'张艺谋'
-    command = u'陈凯歌'
+    #command = u'陈凯歌'
     command = u'韩国 情色'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
-    retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)
+    retList = run(command,searcher, aWrapper, debug=False, use_custom_parser=True)
     printResult(retList)
     del searcher
