@@ -23,6 +23,7 @@ from org.apache.lucene.search.similarities import BM25Similarity,DefaultSimilari
 import json
 import operator
 from sqlConstants import *
+from datetime import datetime, time
 
 from org.apache.lucene.analysis import TokenStream
 from org.apache.lucene.analysis.tokenattributes import \
@@ -34,6 +35,8 @@ import utils
 from query_parser import Parser
 custom_parser = Parser()
 
+module_dir = os.path.dirname(__file__)  # get current directory
+query_log_dir = os.path.join(module_dir, 'query_log')
 
 #what need to do 
 #step 1. change config below
@@ -84,7 +87,15 @@ def printWrappedAnalyzer(aWrapper):
 
 def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
 
-    print
+
+    if not os.path.isdir(query_log_dir):
+        os.mkdir(query_log_dir)
+
+    search_start = time.time()
+    query_log_file = os.path.join(query_log_file, 'query_log.%s' % datetime.now().strftime('%Y-%m-%d'))
+    fw = open(query_log_file, 'a+')
+    fw.write('*********query-log,time=%s*************\n' % datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
+    fw.write('raw_str=%s\n' % unicode_to_str(command))
 
     if command == '':
         return
@@ -105,6 +116,7 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
         print 'before query parser: ', command
 
     command = custom_parser.parse(command) if use_custom_parser else command
+    fw.write('parsed_str=%s\n' % unicode_to_str(command))
     if debug:
         print 'after query parser: ', command
     #创建QueryParser对象 默认的搜索域为title 
@@ -113,6 +125,7 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     query = parser.parse(command)
     if debug:
         print 'after lucene QueryParser: ', query.toString().encode('utf8')
+    fw.write('lucene_str=%s\n' % unicode_to_str(query.toString()))
     #test the analyzerWrapper
     #printTokens(aWrapper,command,'title')
     #printWrappedAnalyzer(aWrapper)
@@ -141,7 +154,9 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
 
     #scoreDocs = searcher.search(query, 50,sort).scoreDocs
     retN = 50 if not debug else 20
+    start_time = time.time()
     scoreDocs = searcher.search(query, retN).scoreDocs
+    cost_time = time.time() - start_time
 
 
 
@@ -170,10 +185,13 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     movieDictList =  utils.scoreDocs2dictList(scoreDocs,searcher)
     retList = movieDictList
     retList = utils.reRank(movieDictList,maxDict,command)
-    
 
     #人工排序
     #retList = sorted(retList, key=operator.itemgetter('boost'), reverse=True)  
+    fw.write('\n***********return list(search/total=%.2fs/%.2fs)***************\n' % (cost_time, time.time() - search_start))
+    for r in retList:
+        fw.write('%s: %s, boost->%s||score=%s\n' % (r['subject_id'], unicode(r['title']), r['boost'], r['score']))
+    fw.write('**************************************************************\n')
 
     del searcher
     return retList
