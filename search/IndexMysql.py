@@ -35,6 +35,7 @@ import utils
 #step 1. change config below
 #step 2. make right connection to the sql
 #step 3. choose right table
+
 #step 4. select the field of the table you need to index or store
 
 
@@ -47,6 +48,29 @@ INDEX_DIR = "/home/env-shared/NGfiles/lucene_index"
 FIELD = 'summary'
 
 #---end config---
+
+with open('./same_adjs_prepared.txt','r') as f:
+    adjMap = {}
+    while(1):
+        line = f.readline()
+        if line == '':
+            break
+        adjPair = line.split(':')
+        sourceAdj = adjPair[0]
+        distAdj = adjPair[1][0:-1]
+        if distAdj not in adjMap.keys():
+            adjMap[distAdj] = [sourceAdj]
+        else:
+            adjMap[distAdj].append(sourceAdj)
+
+def searchDictValue(dic,value):
+    for eachKey in dic.keys():
+        for eachVal in dic[eachKey]:
+            if eachVal == value:
+                return eachKey
+
+    return -1 #not found
+
 
 
 
@@ -61,9 +85,7 @@ class Ticker(object):
             time.sleep(1.0)
 
 def CreateAWrapper():
-
-        # Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
-
+        #索引的时候使用该wrappe，到了搜索的时候还是使用该wrapper
 
         analyzerPerField = HashMap()
         #为所有的域设置不同的analyzer  
@@ -87,7 +109,8 @@ def CreateAWrapper():
         analyzerPerField.put('subtype', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
         analyzerPerField.put('directors', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
         analyzerPerField.put('user_tags', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
-        analyzerPerField.put('others_like', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
+        analyzerPerField.put('others_like   ', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
+        analyzerPerField.put('adjs', WhitespaceAnalyzer(Version.LUCENE_CURRENT))
 
         #analyzerPerField.put('douban_site', StandardAnalyzer(Version.LUCENE_CURRENT))注释起来的都是没必要分析的
         #analyzerPerField.put('image_small', StandardAnalyzer(Version.LUCENE_CURRENT))
@@ -105,6 +128,7 @@ def CreateAWrapper():
         #analyzerPerField.put('comments_count', StandardAnalyzer(Version.LUCENE_CURRENT))
         #analyzerPerField.put('ratings_count', StandardAnalyzer(Version.LUCENE_CURRENT))
 
+        #!欢叔将QueryParser弄好之后就可以改成 WhiteSpace的
         aWapper = PerFieldAnalyzerWrapper(SmartChineseAnalyzer(Version.LUCENE_CURRENT),analyzerPerField)
 
         return aWapper
@@ -121,12 +145,14 @@ class IndexMySql(object):
         aWrapper = LimitTokenCountAnalyzer(aWrapper, 1048576)
         bm25Sim = BM25Similarity(2.0,0.75) #BM25 with these default values: k1 = 1.2, b = 0.75.
         config = IndexWriterConfig(Version.LUCENE_CURRENT, aWrapper)
+        #使用BM25算法，如果不需要就去掉这句即可
         config.setSimilarity(bm25Sim)
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE)
         writer = IndexWriter(store, config)
 
-
+        #start
         self.indexTable(writer)
+
         ticker = Ticker()
         print 'commit index'
         threading.Thread(target=ticker.run).start()
@@ -141,8 +167,8 @@ class IndexMySql(object):
         con = None
 
         #define the index of all the fields
-        #---------step 2----------
-        con = mdb.connect('localhost','root','testgce','douban_movie_v3')
+        #---------step 2：connect to mysql----------
+        con = mdb.connect('localhost','root','testgce','moviedata')
 
         #t_num = FieldType.NumericType it is wrong!!
         t_num = FieldType()
@@ -153,7 +179,7 @@ class IndexMySql(object):
         t1.setStored(True)
         t1.setTokenized(False)
         t1.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS)
-
+        
         t2 = FieldType()
         t2.setIndexed(True)
         t2.setStored(False)
@@ -167,6 +193,7 @@ class IndexMySql(object):
         t3.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS)
 
         maxDict = utils.maxDict
+        #加权数值范围
         base = DOC_BOOST_RANGE[0]
         upper = DOC_BOOST_RANGE[1]
 
@@ -179,47 +206,41 @@ class IndexMySql(object):
             cur.execute('SET NAMES utf8;')
             cur.execute('SET CHARACTER SET utf8;')
             cur.execute('SET character_set_connection=utf8;')
-
-            #------step 3------
+            
+            #------step 3： choose the right table------
             cur.execute("SELECT * FROM movie_items")
 
             numrows = int(cur.rowcount)
             print 'numrows:',numrows
             for i in range(numrows):
+                print
                 row = cur.fetchone()
 
-                #------step 4------
-                summary = row[SUMMARY]
+                #------step 4：Index your field------
+                summary = row[SUMMARY]  
                 subject_id = row[SUBJECT_ID]
 
 
                 print 'id'+subject_id
                 year = utils.formatYear(row[YEAR])
-                print year
                 try:
                     date = DateTools.stringToDate(year.replace('-',' '))
                     wtfFile = open('wtf.txt','a')
                     dateStr  = DateTools.dateToString(date,DateTools.Resolution.DAY)
                 except:
-                    #try:
                     wtfFile.write(year+'\n')
-                    #except:
-                    #    wtfFile.write('*************'+'\n')
 
-
-
-                #calc the boost of doc
-                pass
-
+                        
 
                 doc = Document()
 
                 #boosting
-                boostProb = utils.calcBoostProb(row,maxDict)
+                boostProb = utils.calcBoostProb(row,maxDict,dateStr)
                 boost = base + boostProb*(upper-base)
 
                 doc.add(FloatField("boost",boost,Field.Store.YES))
                 doc.add(StringField("year",dateStr,Field.Store.YES))
+                print 'dateStr:'+dateStr
                 #A text field is a sequence of terms that has been tokenized while a string field is a single term (although it can also be multivalued.)
 
                 do_count = row[DO_COUNT] if row[DO_COUNT] != None else 0
@@ -246,7 +267,35 @@ class IndexMySql(object):
                 f.setBoost(boost)
                 doc.add(f)
 
-                f = Field("casts",     row[CASTS].replace(delim,' '),     t3)
+                #process casts
+                raw_casts = row[CASTS].replace(delim,' ')
+                f = Field("raw_casts", raw_casts , t1)
+                f.setBoost(boost)
+                doc.add(f)
+
+                #将英文人名中的 ·
+                raw_casts = raw_casts.replace('·',' ')
+                
+                if len(raw_casts.split(' '))<CASTS_LEN:
+                    #平局人名长度是4
+                    casts = raw_casts + ' ￥￥￥￥'*(CASTS_LEN-len(raw_casts.split(' ')))
+                f = Field("casts", casts , t3)
+                f.setBoost(boost)
+                doc.add(f)
+
+                #process directors
+                raw_directors = row[DIRECTORS].replace(delim,' ')
+                f = Field("raw_directors",raw_directors, t1)
+                f.setBoost(boost)
+                doc.add(f)
+
+                #将英文人名中的 · 替换
+                raw_directors = raw_directors.replace('·',' ')
+
+                if len(raw_directors.split(' '))<DIRECTORS_LEN:
+                    #平局人名长度是4
+                    directors = raw_directors + ' ￥￥￥￥'*(DIRECTORS_LEN-len(raw_directors.split(' ')))
+                f = Field("directors", directors, t3)
                 f.setBoost(boost)
                 doc.add(f)
 
@@ -255,10 +304,6 @@ class IndexMySql(object):
                 doc.add(f)
 
                 Field("subtype",   row[SUBTYPE].replace(delim,' '),   t3)
-                f.setBoost(boost)
-                doc.add(f)
-
-                f = Field("directors", row[DIRECTORS].replace(delim,' '), t3)
                 f.setBoost(boost)
                 doc.add(f)
 
@@ -271,39 +316,80 @@ class IndexMySql(object):
                 #user_tags 原始字符串要存，reRank要用：
                 doc.add(StringField("raw_user_tags",row[USER_TAGS],Field.Store.YES))
                 doc.add(StringField("raw_others_like",row[OTHERS_LIKE],Field.Store.YES))
+                
 
                 user_tags_str = ''
                 others_like_str = ''
                 tags_len = 0
+                
+
                 if row[USER_TAGS]!='':
-                    user_tags_list = row[USER_TAGS].split(delim)
+                    user_tags_list = row[USER_TAGS].split(delim) 
                     for tag_pair in user_tags_list:
                         if tag_pair!='':#字符串的最后一个字符是￥，这样split之后最后一个元素是空字符
+                            #print 'tag_pair'+tag_pair+'hhe'
                             tag_name = tag_pair.split(delim_uo)[0]+' ' # dont forget this space !!
                             tag_num = tag_pair.split(delim_uo)[1]
-                            tag_num_processed = int(int(tag_num)/SPAN)+1
+                            tag_num_processed = int(int(tag_num)/TAG_SPAN)+1 #最小为1
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             user_tags_str = user_tags_str +' '+ tag_name * tag_num_processed
-                            tags_len = tags_len + tag_num_processed
-                # if row[SUBJECT_ID] == '10583098':
-                #     print user_tags_list
-                #     print tag_pair
-                #     print user_tags_str
-                #     exit()
+                            tags_len = tags_len + tag_num_processed #最后得到总共词的个数
+
 
                 if tags_len<TAGS_AVER_LEN:
-                    #填充tags，目测3是平均长度
+                    #填充tags，目测3是平均长度,所以使用 ￥￥￥
                     user_tags_str = user_tags_str +' ￥￥￥'*(TAGS_AVER_LEN - tags_len)
-                #else:
-                #    print user_tags_str
+                #
+
+
                 if row[OTHERS_LIKE]!='':
                     for like_pair in row[OTHERS_LIKE].split(delim):
                         if like_pair!='':
                             others_like_str = others_like_str +' '+like_pair.split(delim_uo)[1]
 
-                # print user_tags_str
-                # print others_like_str
 
+                #start process adjs
+                if row[ADJS] != None:
+                    raw_adjs = row[ADJS][:-1]
+
+                    adjs_str = ''
+                    adjs_len = 0
+                    if row[ADJS] != '' and row[ADJS] != '\n':
+                        #'重要=4.0,特殊=4.0'
+                        adjs_str = row[ADJS]
+                        adjs_list = adjs_str.split(',')
+                        for adj_pair in adjs_list:
+                            #print 'adj_pair:'+adj_pair+'hhe'
+                            adj_name = adj_pair.split('=')[0]
+                            adj_num = adj_pair.split('=')[1]
+
+                            #去换行符,转换int
+                            if adj_num[-1] == '\n':
+                                adj_num = adj_num[0:-1]
+                            adj_num = int(float(adj_num))
+
+                            add_adj=''
+                            # #同义词
+                            # adj_name_bro = searchDictValue(adjMap,adj_name)
+                            # if adj_name_bro == -1: #表示没有结果，即未找到近义词，不添加
+                            #     add_adj = ''
+                            # else:
+                            #     add_adj = (adj_name_bro+' ')*adj_num
+                            #     raw_adjs = raw_adjs + ',' + adj_name_bro+'='+str(adj_num)
+                                
+                            adjs_str = adjs_str + ' ' + (adj_name+' ') * adj_num +add_adj
+                            adjs_len = adjs_len + adj_num #最后得到总共tags的个数
+
+                    print raw_adjs
+                    doc.add(StringField("raw_adjs",raw_adjs,Field.Store.YES))
+
+                    if adjs_len<ADJS_AVER_LEN:
+                        #填充 adjs_str，目测2是平均长度,所以使用 "￥￥"
+                        adjs_str = adjs_str +' ￥￥'*(ADJS_AVER_LEN - adjs_len)
+
+                    f = Field("adjs", adjs_str, t3)
+                    f.setBoost(boost)
+                    doc.add(f)
 
                 f = Field("user_tags", user_tags_str, t3)
                 f.setBoost(boost)
@@ -313,8 +399,10 @@ class IndexMySql(object):
                 f.setBoost(boost)
                 doc.add(f)
 
+
+
                 #fields which should be analyzed with good analyzer
-                f = Field("title", row[TITLE], t3)
+                f = Field("title", row[TITLE], t3)                
                 f.setBoost(boost)
                 doc.add(f)
 
@@ -343,11 +431,13 @@ class IndexMySql(object):
                     print "warning:\n" + subject_id +'---> No content!'
                 print 'boosting:' + str(boost)
 
+                #for debug
                 if boost>upper:
                     print boostProb
                     print maxDict
-
+                    
                     exit(0)
+
                 writer.addDocument(doc)
 
 
@@ -367,6 +457,4 @@ if __name__ == '__main__':
     IndexMySql(os.path.join(base_dir, INDEX_DIR), aWrapper)
     end = datetime.now()
     print end - start
-    #except Exception, e:
-    #    print "Failed: ", e
-    #    raise e
+
