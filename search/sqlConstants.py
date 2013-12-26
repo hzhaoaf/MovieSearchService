@@ -85,18 +85,22 @@ delim = '￥' #genres casts aka user_tag others_like countries
 delim_uo = '<>'
 
 
+CASTS_LEN = 10 #不足10个演员的补齐
+DIRECTORS_LEN = 10 #不足10个导演的补齐
+
+
 TAGS_NUM = 20
-SPAN = 500
+TAG_SPAN = 500 #在Index的时候预处理一下，Tag要乘以多少，比如 tag<>1000 就乘以 2
 TAGS_AVER_LEN = 100
-ADJS_AVER_LEN = 20
+ADJS_AVER_LEN = 100
 TAG_NUM_FACTOR = 0.0001 #so a tag marked by 16000 people will get a times of 1.6
-ADJ_NUM_FACTOR = 0.1 # so a adj with a number of 16 will get a times of 1.6
+ADJ_NUM_FACTOR = 0.01 # so a adj with a number of 16 will get a times of 1.6
 
 ADJ_NUM = 5
 SUMMARY_ADJ_BOOST = 4
 
 #表示对doc的加权范围
-DOC_BOOST_RANGE = [1,8]
+DOC_BOOST_RANGE = [1,4]
 
 # for test 
 ID = 0
@@ -108,7 +112,7 @@ DICT = 0
 SCOREDOCS = 1
 
 #这个数字越接近当前时间，时间的影响就越大,越近的电影加权越大
-NOW = 20500000
+NOW = 20200000
 
 #firstMovieTime
 firstMovieTime = 18950000 #工厂大门

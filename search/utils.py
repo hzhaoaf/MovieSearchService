@@ -15,17 +15,9 @@ from time import sleep
 from datetime import *
 import operator
 
-def str_to_unicode(raw_str):
-    '''
-        将str转换为unicode str，当raw_str已经是unicode，则不用转了
-    '''
-    if isinstance(raw_str, unicode):
-        return raw_str
-    else:
-        return raw_str.decode('utf8')
 
 def simlifyRetDict(retDict):
-	reservedList = ['subject_id','title','directors','year','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost','raw_adjs']
+	reservedList = ['subject_id','title','raw_directors','year','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost','raw_adjs']
 	keyList = retDict.keys()
 	for eachKey in keyList:
 		if eachKey not in reservedList:
@@ -292,6 +284,16 @@ def f_ao(x):
 	y = a*x*x + b*x
 	return y
 
+def f_contrast(x):
+	#目前是 0～10
+	coff = [-0.0833,1.2500,-3.1667,-0.0000]
+	items = [x*x*x,x*x,x,1]
+	y = 0
+	for i in range(len(coff)):
+		y = y + coff[i]*items[i]
+	return y
+
+
 def insert2HistList(alist,pos):
 	#如果list已经够长
 	if len(alist)>pos:
@@ -456,23 +458,22 @@ def calcBoostProb(doc_row,maxDict,dateStr):
 	#一个好的加权，应该保证这几个维度上的数值都在差不多的范围
 	sparse = 0.3
 	#评分比较差的，就让它更差
-	if rating_av<7:
-		rating_av = float(rating_av) * 0.6
-	print rating_av
-	#!problem
-	print (rating_av/10)*sparse,impressive,popularity,howNew,trends
+	#rating_av = f_contrast(rating_av)
+	#print 'rating_av adjusted:'+str(rating_av)
+
 	#it is a measure of whether a movie should be addBoost, =1 means it is a  totally good movie which should be boosted
 	boostProb = 0.65*(rating_av/10) + (0.15*impressive + 0.1*popularity) +0.1*howNew
 
-	print rating_total, impressive, popularity, trends
+	print 'rating_av:'+str(rating_av), 'impressive:'+str(impressive), 'popularity:'+str(popularity),'trends'+str(trends)
 	# if boostProb>0.8:
 	# 	exit()
 	return boostProb
 
 def getFieldValueInCommand(command,field):
 	#usage: return a Value of field in command in the type of list
-	#！！！！！！！！！！！！！服务器的时候 不要下面这句话
-	command = str_to_unicode(command)
+	#！！！！！！！！！！！！！本地的时候需要从UTF8-》unicode 不要下面这句话
+	if not isinstance(command, unicode):
+		command = unicode(command,'utf-8')
 	offset = command.find(field)
 	if  offset >= 0: #说明使用了field搜索 
 		offset = offset + len(field) + 1 #get to the position after the ':' of the field
@@ -483,19 +484,33 @@ def getFieldValueInCommand(command,field):
 				offset = offset + 1
 			else:
 				break
-		tag_ = command[start:offset] #it's like 'tag1 tag2 NextField '
-		if tag_[-1] == u':':
-			tag_list = tag_.split(u' ')[0:-1] #get rid of the 'NextFiled'
+		val_ = command[start:offset] #it's like 'val1^2 val2 NextField'
+		if val_[-1] == u':':
+			val_list = val_.split(u' ')[0:-1] #get rid of the 'NextFiled'
 		else:
-			tag_list = tag_.split(u' ') #get rid of the 'NextFiled'
-		return tag_list
+			val_list = val_.split(u' ') #get rid of the 'NextFiled'
+
+		#处理一些 ^ 情况
+		val_list_new = []
+		for val in val_list:
+			if val!='':
+				if u'^' in val:
+					val = val.split(u'^')[0]
+					# val = val.encode('utf-8')
+				val_list_new.append(val)
+		return val_list_new
 	else:
 		return False
 
 def getTagValueInRawTags(raw_user_tags,tag):
 	#usage: return a num of tag in raw_user_tags in the type of list
+	#raw_user_tags = unicode(raw_user_tags,'utf-8')
+	# tag = unicode(tag,'utf-8')
 	offset = raw_user_tags.find(tag)
-	if  offset >= 0: #说明使用了field搜索 
+	if offset<0 or raw_user_tags=='': # 注意： ''.find('')=0
+		return False
+
+	if  offset == 0 and raw_user_tags[offset+len(tag)]==u'<': # 说明使用了field搜索 
 		offset = offset + len(tag) #get to the next position of the field
 		start = offset 
 
@@ -505,19 +520,45 @@ def getTagValueInRawTags(raw_user_tags,tag):
 			else:
 				break
 		num_ = raw_user_tags[start:offset] #it's like '<>123'
-		tag_num = int(num_[2:]) #get rid of the '<>'
+		tag_num = int(float(num_[2:])) #get rid of the '<>'
 		if tag_num == 0:
 			exit('error when analyzing the raw_user_tags')
 		return tag_num
 	else:
-		return False
+		tag_ = u'￥'+tag + u'<>'
+		offset = raw_user_tags.find(tag_)
+
+		if offset>0: #不会再等域0
+			offset = offset+1 #去掉'￥'
+			offset = offset + len(tag)
+			start = offset
+			#这一块是叫 offset 往前走，有两种可能停下来 1.遇到',' 2.到结尾
+			while offset<len(raw_user_tags):
+				#往前走，知道遇见一个 '￥'
+				if raw_user_tags[offset] != u'￥':
+					offset = offset + 1
+				else:
+					break
+			num_ = raw_user_tags[start:offset] #it's like '<>12.0'
+			tag_num = int(float(num_[2:])) #get rid of the '='
+
+			return tag_num
+	
+
 
 def getAdjValueInRawAdjs(raw_adjs,adj):
+	#raw_adjs = unicode(raw_adjs,'utf-8')	
+	# adj = unicode(adj,'utf-8')
+	adj_ = adj
 	#usage: return a num of adj in raw_user_tags in the type of list
 	offset = raw_adjs.find(adj)
-	if  offset >= 0: #说明 含有 adj字串
+	
+	if offset<0 or raw_adjs=='':
+		return False
+
+	if  offset == 0 and raw_adjs[offset+len(adj)]==u'=': #说明 含有 adj字串,而且是第一个
 		offset = offset + len(adj) #get to the end position of the next adj
-		start = offset 
+		start = offset
 
 		#这一块是叫 offset 往前走，有两种可能停下来 1.遇到',' 2.到结尾
 		while offset<len(raw_adjs):
@@ -532,35 +573,62 @@ def getAdjValueInRawAdjs(raw_adjs,adj):
 			exit('error when analyzing the raw_adjs')
 		return adj_num
 	else:
-		return False
+		adj_ = u','+adj + u'='  #预防一种搜索 “好” ，但是出现在 好看 处卡死的状态
+		# print adj_
+		offset = raw_adjs.find(adj_)
+		if offset>0: #不会再等域0
+			offset = offset+1 #去掉','
+			offset = offset + len(adj)
+			start = offset
+			#这一块是叫 offset 往前走，有两种可能停下来 1.遇到',' 2.到结尾
+			while offset<len(raw_adjs):
+				#往前走，知道遇见一个 ','
+				if raw_adjs[offset] != u',':
+					offset = offset + 1
+				else:
+					break
+			num_ = raw_adjs[start:offset] #it's like '=12.0'
+			adj_num = int(float(num_[1:])) #get rid of the '='
+			
+
+			return adj_num
+
 
 
 def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 	#reRank的最核心的意义在于将command 信息融入，可以弥补一些缺陷比如 user_tags后的人数对加权的作用有限
 	#rankFlag 是按照什么排序，如果该值为 None，直接reRank
+	print 'ok'
 	for eachDict in movieDictList:
 		boost = 1 # 初始boost
 		times = 1 # 倍数
 
 		# rating_av, rating_total, popularity, trends, impressive,howNew = basicFeaturesOfMovie(eachDict,maxDict)
 
+		print '---'
 		#process tags
-		tag_list = getFieldValueInCommand(command,'user_tags')
+		tag_list = getFieldValueInCommand(command,u'user_tags')
+		print tag_list
 		if tag_list: #exist,说明用户搜索了该域
 			for eachTag in tag_list: #再raw中搜索每个再command中出现的tag
+				print 'tag：'+ eachTag.encode('utf-8')
 				raw_tags = eachDict['raw_user_tags']
 				tag_num = getTagValueInRawTags(raw_tags,eachTag)
+				print 'tag_num:'+str(tag_num)
 				if tag_num:
+					print 'add_tag'+str(tag_num*TAG_NUM_FACTOR)
 					times = times*(1 + tag_num*TAG_NUM_FACTOR) #0.0001 now
-
 		#process adjs
-		adj_list = getFieldValueInCommand(command,'adjs')
+		adj_list = getFieldValueInCommand(command,u'adjs')
 		if adj_list:
 			for eachAdj in adj_list:
+				print eachAdj
 				raw_adjs = eachDict['raw_adjs']
 				adj_num = getAdjValueInRawAdjs(raw_adjs,eachAdj)
-				# if adj_num:
-					# times = times*(1+adj_num*ADJ_NUM_FACTOR)
+				print adj_num
+				if adj_num:
+					print adj_num*ADJ_NUM_FACTOR
+					times = times*(1+adj_num*ADJ_NUM_FACTOR)
 
 
 
@@ -578,20 +646,28 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 
 #debug area 
+if __name__ == '__main__':
 
-#print getAdjValueInRawAdjs('哈哈=23,呵呵=90','哈哈')
+	print '1.'
+	print getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 美丽^2.0",'user_tags')[0]
+	print '2.'
+	print getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 ",'adjs')
+	print '3.'
+	print getAdjValueInRawAdjs('哈哈=23,呵呵=90,哈=30','哈')
+	print '4.'
+	print getTagValueInRawTags('哈哈<>23￥呵呵<>90￥哈<>90','哈')
 
-# a = [1,5]
-# insert2HistList(a,5)
-# print a
+	# a = [1,5]
+	# insert2HistList(a,5)
+	# print a
 
-# import json 
+	# import json 
 
-# maxDict,histoDict = getMax()
-# print maxDict
-# histoDictStr = json.dumps(histoDict)
-# with open('./statistic.txt','w') as f:
-# 	f.write(histoDictStr)
+	# maxDict,histoDict = getMax()
+	# print maxDict
+	# histoDictStr = json.dumps(histoDict)
+	# with open('./statistic.txt','w') as f:
+	# 	f.write(histoDictStr)
 
 
 
