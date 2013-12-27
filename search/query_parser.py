@@ -35,7 +35,7 @@ boosting_fields_weight = {
                         'year': '10.0',
                         'adjs': '15.0',
                         }
-use_synonymous = False
+use_synonymous = True
 
 def unicode_to_str(raw_str):
     if isinstance(raw_str, str):
