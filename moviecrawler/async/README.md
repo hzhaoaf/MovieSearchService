@@ -48,4 +48,5 @@ The method is simple enough for everyone to understand.
 *   A python script controlled by `cron` regularly to read the movie IDs from the file, one ID at a time, process it and delete the ID
 *   As long as we have new IDs, process it, or, just return
 
+For getting started with `Cron`, refer to [Crontab - Quick Reference](http://www.adminschoice.com/crontab-quick-reference/).
 

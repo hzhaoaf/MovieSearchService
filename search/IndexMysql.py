@@ -49,19 +49,19 @@ FIELD = 'summary'
 
 #---end config---
 
-with open('./same_adjs_prepared.txt','r') as f:
-    adjMap = {}
-    while(1):
-        line = f.readline()
-        if line == '':
-            break
-        adjPair = line.split(':')
-        sourceAdj = adjPair[0]
-        distAdj = adjPair[1][0:-1]
-        if distAdj not in adjMap.keys():
-            adjMap[distAdj] = [sourceAdj]
-        else:
-            adjMap[distAdj].append(sourceAdj)
+# with open('./same_adjs_prepared.txt','r') as f:
+#     adjMap = {}
+#     while(1):
+#         line = f.readline()
+#         if line == '':
+#             break
+#         adjPair = line.split(':')
+#         sourceAdj = adjPair[0]
+#         distAdj = adjPair[1][0:-1]
+#         if distAdj not in adjMap.keys():
+#             adjMap[distAdj] = [sourceAdj]
+#         else:
+#             adjMap[distAdj].append(sourceAdj)
 
 def searchDictValue(dic,value):
     for eachKey in dic.keys():
