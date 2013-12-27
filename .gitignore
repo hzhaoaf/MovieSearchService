@@ -41,3 +41,6 @@ nosetests.xml
 *.swp
 
 *.html
+
+# Fuck the logs
+query_log.*
