@@ -17,7 +17,7 @@ import operator
 
 
 def simlifyRetDict(retDict):
-	reservedList = ['subject_id','title','raw_directors','year','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost','raw_adjs']
+	reservedList = ['subject_id','times','title','raw_directors','year','summary','image_small','rating_average','collect_count','raw_user_tags','countries','score','boost','raw_adjs']
 	keyList = retDict.keys()
 	for eachKey in keyList:
 		if eachKey not in reservedList:
@@ -627,6 +627,8 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 				if tag_num:
 					print 'add_tag'+str(tag_num*TAG_NUM_FACTOR)
 					times = times*(1 + tag_num*TAG_NUM_FACTOR) #0.0001 now
+
+
 		#process adjs
 		adj_list = getFieldValueInCommand(command,u'adjs')
 		if adj_list:
@@ -643,7 +645,7 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 		boost = boost * times
 		eachDict['score'] = eachDict['score']*boost
-
+		eachDict['times'] = times
 		simlifyRetDict(eachDict)
 
 	retMovieList = sorted(movieDictList, key=operator.itemgetter('score'), reverse=True)  
