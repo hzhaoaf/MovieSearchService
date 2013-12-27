@@ -645,7 +645,7 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 		boost = boost * times
 		eachDict['score'] = eachDict['score']*boost
-		eachDict['times'] = adj_num
+		eachDict['times'] = times
 		simlifyRetDict(eachDict)
 
 	retMovieList = sorted(movieDictList, key=operator.itemgetter('score'), reverse=True)  
