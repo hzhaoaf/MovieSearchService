@@ -615,29 +615,29 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 		# rating_av, rating_total, popularity, trends, impressive,howNew = basicFeaturesOfMovie(eachDict,maxDict)
 
-		# print '---'
-		# #process tags
-		# tag_list = getFieldValueInCommand(command,u'user_tags')
-		# if tag_list: #exist,说明用户搜索了该域
-		# 	for eachTag in tag_list: #再raw中搜索每个再command中出现的tag
-		# 		print 'tag：'+ eachTag.encode('utf-8')
-		# 		raw_tags = eachDict['raw_user_tags']
-		# 		tag_num = getTagValueInRawTags(raw_tags,eachTag)
-		# 		print 'tag_num:'+str(tag_num)
-		# 		if tag_num:
-		# 			print 'add_tag'+str(tag_num*TAG_NUM_FACTOR)
-		# 			times = times*(1 + tag_num*TAG_NUM_FACTOR) #0.0001 now
-		# #process adjs
-		# adj_list = getFieldValueInCommand(command,u'adjs')
-		# if adj_list:
-		# 	for eachAdj in adj_list:
-		# 		print eachAdj.encode('utf-8')
-		# 		raw_adjs = eachDict['raw_adjs']
-		# 		adj_num = getAdjValueInRawAdjs(raw_adjs,eachAdj)
-		# 		print adj_num
-		# 		if adj_num:
-		# 			print adj_num*ADJ_NUM_FACTOR
-		# 			times = times*(1+adj_num*ADJ_NUM_FACTOR)
+		print '---'
+		#process tags
+		tag_list = getFieldValueInCommand(command,u'user_tags')
+		if tag_list: #exist,说明用户搜索了该域
+			for eachTag in tag_list: #再raw中搜索每个再command中出现的tag
+				print 'tag：'+ eachTag.encode('utf-8')
+				raw_tags = eachDict['raw_user_tags']
+				tag_num = getTagValueInRawTags(raw_tags,eachTag)
+				print 'tag_num:'+str(tag_num)
+				if tag_num:
+					print 'add_tag'+str(tag_num*TAG_NUM_FACTOR)
+					times = times*(1 + tag_num*TAG_NUM_FACTOR) #0.0001 now
+		#process adjs
+		adj_list = getFieldValueInCommand(command,u'adjs')
+		if adj_list:
+			for eachAdj in adj_list:
+				print eachAdj.encode('utf-8')
+				raw_adjs = eachDict['raw_adjs']
+				adj_num = getAdjValueInRawAdjs(raw_adjs,eachAdj)
+				print adj_num
+				if adj_num:
+					print adj_num*ADJ_NUM_FACTOR
+					times = times*(1+adj_num*ADJ_NUM_FACTOR)
 
 
 
