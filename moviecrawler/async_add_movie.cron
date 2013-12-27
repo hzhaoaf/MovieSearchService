@@ -1,0 +1,1 @@
+* /5 * * * * /usr/bin/python /home/lihang/django-project/ngbackend/moviecrawler/async_add_movie_cron.py >> /home/lihang/OpenData/movie_items/movieCraweler.log 2>&1

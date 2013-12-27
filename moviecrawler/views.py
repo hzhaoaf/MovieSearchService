@@ -20,9 +20,15 @@ def addMovieByID(request):
             retJson['msg'] = 'Good boy, you are trying to add a new movie:-)'
 	    retJson['subjectID'] = subjectID
 
+            queueIDFilePath = '/home/lihang/OpenData/movie_items/movieIDQueue'
+
             try:
-                getMovieInfoByIdWrapper.getAllMovieInfoBySubjectIDWrapper(subjectID)
+                #getMovieInfoByIdWrapper.getAllMovieInfoBySubjectIDWrapper(subjectID)
+                queueIDFile = open(queueIDFilePath, 'a')
+                queueIDFile.write(subjectID + '\n')
+                queueIDFile.close()
 		retJson['result'] = 'Success'
+                retJson['status'] = 'The ID ' + subjectID + ' has been added to the Queue and will be processed later on'
             except Exception as e:
                 retJson['result'] = 'Fail'
                 retJson['reason'] =  str(e)
