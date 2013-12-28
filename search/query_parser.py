@@ -99,7 +99,10 @@ class Parser:
     def someConversionTrick(self,term):
         #by LA
         convertDict = {u'戳泪点'   : u'悲伤',\
-                       u'戳中泪点' : u'悲伤'}
+                       u'戳中泪点' : u'悲伤',
+                       u'戳中笑点' : u'搞笑',
+                       u'戳中点' : u'搞笑',
+                       }
         for eachKey in convertDict.keys():
             term = term.replace(eachKey,convertDict[eachKey])
         return term
