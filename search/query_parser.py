@@ -208,12 +208,10 @@ def test_parser(raw_str):
     #print term in parser.person_terms
     #parser.test_ltp('很多人觉得剧情很矫情')
     print parser.parse(raw_str)
-    print parser.needUseLtp(raw_str)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         raw_str = sys.argv[1].decode('utf8')
     else:
         raw_str = u'我想看张艺谋的电影'
-    print 'wtf'
     test_parser(raw_str)
