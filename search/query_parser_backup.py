@@ -25,18 +25,16 @@ basic_fields_weight = {'directors': '1.0',
                        }
 #一旦检查到该term也有boosting_fields中的type，需要增加该域的搜索
 boosting_fields_weight = {
-                        'directors': '5.0',
-                        'casts': '5.0',
-                        'title': '5.0',
-                        'original_title': '2.5',
-                        'aka': '2.5',
-                        'countries': '25.0',
-                        'user_tags': '25.0',
-                        'year': '5.0',
-                        'adjs': '7.5',
+                        'directors': '10.0',
+                        'casts': '10.0',
+                        'title': '10.0',
+                        'original_title': '5.0',
+                        'aka': '5.0',
+                        'countries': '50.0',
+                        'user_tags': '50.0',
+                        'year': '10.0',
+                        'adjs': '15.0',
                         }
-defaultWeight = 2.5
-
 use_synonymous = True
 
 def unicode_to_str(raw_str):
@@ -145,7 +143,7 @@ class Parser:
             if term in self.term_types and not self.needUseLtp(term): #后一句 LA
                 types = self.term_types[term]
                 for t in types:
-                    query_fields[t] = boosting_fields_weight.get(t, defaultWeight)
+                    query_fields[t] = boosting_fields_weight.get(t, 5.0)
 
                 ##custom_types = [t for t in types if t not in basic_fields_weight.keys()]
                 #if custom_types:
