@@ -86,6 +86,28 @@ class Parser:
         for t in terms:
             self.ont2syns.setdefault(str_to_unicode(t[1]), []).append(str_to_unicode(t[0]))
 
+    #-----
+    def needUseLtp(self,term):
+        #this function is written by LA
+        commonWordList = [u'的电影']
+        for commonWord in commonWordList:
+            if term.find(commonWord)>0:
+                return True
+        return False
+
+
+    def someConversionTrick(self,term):
+        #by LA
+        convertDict = {u'戳泪点'   : u'悲伤',\
+                       u'戳中泪点' : u'悲伤'}
+        for eachKey in convertDict.keys():
+            term = term.replace(eachKey,convertDict[eachKey])
+        return term
+
+    #-----
+
+
+
     def get_synonyms_adjs(self, adj):
         ont = self.syn2ont.get(adj)
         if not ont:
@@ -95,6 +117,7 @@ class Parser:
 
     def parse(self, raw_str):
         #import pdb;pdb.set_trace()
+        #这里的terms就是用户输入的raw_str按空格切分
         terms = raw_str.split()
         query = ''
         for term in terms:
@@ -116,7 +139,8 @@ class Parser:
             return ''.join(lines)
 
         try:
-            if term in self.term_types:
+            #如果term是属于某一个type
+            if term in self.term_types and not self.needUseLtp(term): #LA
                 types = self.term_types[term]
                 for t in types:
                     query_fields[t] = boosting_fields_weight.get(t, 5.0)
@@ -126,8 +150,14 @@ class Parser:
                 #    need_custom_fields = {ct: custom_fields_weight.get(ct, '1.0') for ct in custom_types}
                 #    query_str += generate_query_by_fields(term, need_custom_fields)
 
+            #如果term不属于任意一个type，进行分词
             else:
                 #这个时候很有可能是一句话，就引入ltp进行分词
+
+                #---by LA start---
+                term = self.someConversionTrick(term)
+                #---by LA end---
+
                 #import pdb;pdb.set_trace()
                 #import time
                 #start = time.time()
