@@ -126,7 +126,21 @@ After you make changes to config files.
 Then you can access `http://hostname/phpMyAdmin` or `http://IP_Addr/phpMyAdmin` to manage your mysql database.
 
 ### PyLucene
-Todo for Rio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Web Service
 #### Apache2
