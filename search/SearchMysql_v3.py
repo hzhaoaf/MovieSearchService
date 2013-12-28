@@ -196,7 +196,7 @@ def run(command, searcher, aWrapper, use_custom_parser=False, debug=False):
     retList = utils.reRank(movieDictList,maxDict,command)
 
     #人工排序
-    retList = sorted(retList, key=operator.itemgetter('boost'), reverse=True)  
+    #retList = sorted(retList, key=operator.itemgetter('boost'), reverse=True)  
     fw.write('***********return list(search/total=%.2fs/%.2fs)***************\n' % (cost_time, time.time() - search_start))
     for r in retList:
         line = '%s: %s, boost->%s||score=%s\n' % (r['subject_id'], r['title'], r['boost'], r['score'])
