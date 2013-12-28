@@ -25,17 +25,19 @@ basic_fields_weight = {'directors': '1.0',
                        }
 #一旦检查到该term也有boosting_fields中的type，需要增加该域的搜索
 boosting_fields_weight = {
-                        'directors': '5.0',
-                        'casts': '5.0',
-                        'title': '5.0',
-                        'original_title': '2.5',
-                        'aka': '2.5',
-                        'countries': '25.0',
-                        'user_tags': '25.0',
-                        'year': '5.0',
-                        'adjs': '7.5',
+                        'directors': '2.0',
+                        'casts': '2.0',
+                        'title': '2.0',
+                        'original_title': '0.5',
+                        'aka': '1.0',
+                        'countries': '7.0',
+                        'user_tags': '7.5',
+                        'year': '1.0',
+                        'adjs': '2.5',
                         }
-defaultWeight = 2.5
+defaultWeight = 1.5
+defaultAdj = 2.5
+defaultPerson = 2
 
 use_synonymous = True
 
