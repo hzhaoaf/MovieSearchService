@@ -93,7 +93,7 @@ TAGS_NUM = 20
 TAG_SPAN = 500 #在Index的时候预处理一下，Tag要乘以多少，比如 tag<>1000 就乘以 2
 TAGS_AVER_LEN = 100
 ADJS_AVER_LEN = 100
-TAG_NUM_FACTOR = 0.00001 #so a tag marked by 16000 people will get a times of 0.16
+TAG_NUM_FACTOR = 0.0001 #so a tag marked by 16000 people will get a times of 0.16
 ADJ_NUM_FACTOR = 0.001 # so a adj with a number of 16 will get a times of 0.016
 
 ADJ_NUM = 5

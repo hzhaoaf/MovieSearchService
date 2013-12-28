@@ -140,7 +140,7 @@ class Parser:
 
         try:
             #如果term是属于某一个type
-            if term in self.term_types and not self.needUseLtp(term): #LA
+            if term in self.term_types and not self.needUseLtp(term): #后一句 LA
                 types = self.term_types[term]
                 for t in types:
                     query_fields[t] = boosting_fields_weight.get(t, 5.0)

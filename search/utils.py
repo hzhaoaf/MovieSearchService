@@ -167,7 +167,7 @@ def scoreDocs2dictList(scoreDocs,searcher):
 		
 	
 def getLevel(num,numArea):
-	#usage:用于判断num是否在numArea中，如果不在，取上界或者下界
+	#usage:用于判断num是否在numArea中，如果不在，取上界或者下界，在吧里什么水平
 	scope_len = numArea[1]-numArea[0]
 	if num < numArea[0]:
 		level = 0.0
