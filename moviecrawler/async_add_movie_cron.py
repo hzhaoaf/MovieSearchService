@@ -15,7 +15,7 @@ queueIDFailedFile = open(queueIDFailedFilePath, 'a')
 
 with open(queueIDFilePath, 'rw') as queueIDFile:
     queueIDsToProcess = queueIDFile.readlines()
-    if queueIDsToProcess > 0:
+    if len(queueIDsToProcess) > 0:
         #queueIDToProcess = queueIDFile.readline().strip('\n')
         #queueIDToProcess = queueIDFile.readline()
         queueIDToProcess = queueIDsToProcess[0].strip('\n')
@@ -31,7 +31,7 @@ with open(queueIDFilePath, 'rw') as queueIDFile:
     else:
         # Nothing to do, just return
         print 'No Movie IDs to process and will exit'
-        #return            
+        #return
 
 queueIDProcessedFile.close()
 queueIDSuccessedFile.close()
