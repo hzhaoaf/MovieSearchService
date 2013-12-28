@@ -173,7 +173,7 @@ class Parser:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
-                        adjs_weights = {'adjs': '15.0', 'user_tags': '15.0'}
+                        adjs_weights = {'adjs': '7.5', 'user_tags': '7.5'}
                         syn_adjs = []
                         #import pdb;pdb.set_trace()
                         for adj in adjs:
@@ -182,7 +182,7 @@ class Parser:
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
-                        person_weights = {'directors': '10.0', 'casts': '10.0'}
+                        person_weights = {'directors': '5.0', 'casts': '5.0'}
                         query_fields.pop('directors')
                         query_fields.pop('casts')
                         persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])
