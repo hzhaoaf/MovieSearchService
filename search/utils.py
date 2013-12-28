@@ -24,6 +24,18 @@ def simlifyRetDict(retDict):
 			retDict.pop(eachKey)
 
 
+def findall(string,sub_str):
+	result = []
+	start = 0
+	while True:
+		pos = string.find(sub_str, start)
+		if pos >= 0:
+			result.append(pos)
+			start = pos + len(sub_str)
+			continue
+		break
+	return result
+
 def formatYear(yearStr):
 	#usage: this function is used for format the 'year' field in sql to the date type in python 
 	# 豆瓣的 year 字段 有几种主要的，还有无数狗屎一样的
@@ -484,33 +496,40 @@ def getFieldValueInCommand(command,field):
 	#！！！！！！！！！！！！！本地的时候需要从UTF8-》unicode 不要下面这句话
 	if not isinstance(command, unicode):
 		command = unicode(command,'utf-8')
-	offset = command.find(field)
-	if  offset >= 0: #说明使用了field搜索 
-		offset = offset + len(field) + 1 #get to the position after the ':' of the field
-		start = offset 
+	offset_list = findall(command,field)
+	#print offset_list
+	val_list_all = [] #记录所有 val 
+	for offset in offset_list:
+		if  offset >= 0: #说明使用了field搜索 
+			offset = offset + len(field) + 1 #get to the position after the ':' of the field
+			start = offset 
 
-		while offset<len(command):
-			if command[offset] != ':':
-				offset = offset + 1
-			else:
-				break
-		val_ = command[start:offset] #it's like 'val1^2 val2 NextField'
-		if val_[-1] == u':':
-			val_list = val_.split(u' ')[0:-1] #get rid of the 'NextFiled'
-		else:
-			val_list = val_.split(u' ') #get rid of the 'NextFiled'
+			#往前走知道遇到一个：或者到头
+			while offset<len(command):
+				if command[offset] != ':':
+					offset = offset + 1
+				else:
+					break
+			#print command[start]
+			val_ = command[start:offset] 
+			#print val_
 
-		#处理一些 ^ 情况
-		val_list_new = []
-		for val in val_list:
-			if val!='':
-				if u'^' in val:
-					val = val.split(u'^')[0]
-					# val = val.encode('utf-8')
-				val_list_new.append(val)
-		return val_list_new
-	else:
-		return False
+			if offset<len(command): #证明是提前终止的,也就是碰到了 ： it's like 'val1^2 val2 NextField'
+				val_list = val_.split(u' ')[0:-1] #get rid of the 'NextFiled'
+			else: #说明到了最后
+				val_list = val_.split(u' ') #get rid of the 'NextFiled'
+			#print val_list
+
+			#处理一些 ^ 情况
+			val_list_new = [] #用来存储去掉 ^之后的 list
+			for val in val_list:
+				if val!='':
+					if u'^' in val:
+						val = val.split(u'^')[0]
+						# val = val.encode('utf-8')
+					val_list_new.append(val)
+			val_list_all.extend(val_list_new)
+	return val_list_all
 
 def getTagValueInRawTags(raw_user_tags,tag):
 	#usage: return a num of tag in raw_user_tags in the type of list
@@ -658,17 +677,23 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 #debug area 
 if __name__ == '__main__':
+	#print findall(u"asghjashkjasiuasiouas",u'as')
 
-	print '1.'
-	print getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 美丽^2.0",u'user_tags')[0]
+	# print '1.'
+	# print getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 ",u'adjs')
 	print '2.'
-	print getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 ",u'adjs')
-	print '3.'
-	print getAdjValueInRawAdjs(u'哈哈=23,呵呵=90,哈=30',u'哈')
-	print '4.'
-	print getTagValueInRawTags(u'哈哈<>23￥呵呵<>90￥哈<>90',u'哈')
+	li = getFieldValueInCommand("title:哈哈 user_tags:人生^20.0 美丽^2.0 user_tags:开心^2.0",u'user_tags')
+	print 
+	print li[0]
+	print li[1]
+	print li[2]
+	# print '3.'
+	# print getAdjValueInRawAdjs(u'哈哈=23,呵呵=90,哈=30',u'哈')
+	# print '4.'
+	# print getTagValueInRawTags(u'哈哈<>23￥呵呵<>90￥哈<>90',u'哈')
 
-	print DEBUG_WRONG_YEAR
+	#print DEBUG_WRONG_YEAR
+
 	# a = [1,5]
 	# insert2HistList(a,5)
 	# print a
@@ -680,25 +705,6 @@ if __name__ == '__main__':
 	# histoDictStr = json.dumps(histoDict)
 	# with open('./statistic.txt','w') as f:
 	# 	f.write(histoDictStr)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
