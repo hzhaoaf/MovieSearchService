@@ -25,16 +25,20 @@ basic_fields_weight = {'directors': '1.0',
                        }
 #一旦检查到该term也有boosting_fields中的type，需要增加该域的搜索
 boosting_fields_weight = {
-                        'directors': '10.0',
-                        'casts': '10.0',
-                        'title': '10.0',
-                        'original_title': '5.0',
-                        'aka': '5.0',
-                        'countries': '50.0',
-                        'user_tags': '50.0',
-                        'year': '10.0',
-                        'adjs': '15.0',
+                        'directors': '2.0',
+                        'casts': '2.0',
+                        'title': '2.0',
+                        'original_title': '0.5',
+                        'aka': '1.0',
+                        'countries': '2.0',
+                        'user_tags': '2.5',
+                        'year': '1.0',
+                        'adjs': '2.5',
                         }
+defaultWeight = 1.5
+defaultAdj = '2.5'
+defaultPerson = '2.0'
+
 use_synonymous = True
 
 def unicode_to_str(raw_str):
@@ -141,9 +145,10 @@ class Parser:
         try:
             #如果term是属于某一个type
             if term in self.term_types and not self.needUseLtp(term): #后一句 LA
+                print 'dont need use ltp'
                 types = self.term_types[term]
                 for t in types:
-                    query_fields[t] = boosting_fields_weight.get(t, 5.0)
+                    query_fields[t] = boosting_fields_weight.get(t, defaultWeight)
 
                 ##custom_types = [t for t in types if t not in basic_fields_weight.keys()]
                 #if custom_types:
@@ -153,6 +158,7 @@ class Parser:
             #如果term不属于任意一个type，进行分词
             else:
                 #这个时候很有可能是一句话，就引入ltp进行分词
+                print 'need use ltp'
 
                 #---by LA start---
                 term = self.someConversionTrick(term)
@@ -171,7 +177,7 @@ class Parser:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
-                        adjs_weights = {'adjs': '15.0', 'user_tags': '15.0'}
+                        adjs_weights = {'adjs': defaultAdj, 'user_tags': defaultAdj}
                         syn_adjs = []
                         #import pdb;pdb.set_trace()
                         for adj in adjs:
@@ -180,7 +186,7 @@ class Parser:
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
-                        person_weights = {'directors': '10.0', 'casts': '10.0'}
+                        person_weights = {'directors': defaultPerson, 'casts': defaultPerson}
                         query_fields.pop('directors')
                         query_fields.pop('casts')
                         persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])
