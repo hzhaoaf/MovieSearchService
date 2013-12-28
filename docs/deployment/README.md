@@ -160,31 +160,31 @@ The steps we use are:
 
 *   [Install Django]
 
-    sudo apt-get install python-django
-    sudo apt-get install python-mysqldb
+        sudo apt-get install python-django
+        sudo apt-get install python-mysqldb
 
 *   [Verify Django]
 
-    django-admin startproject test
-    cd test/
-    python manage.py runserver
+        django-admin startproject test
+        cd test/
+        python manage.py runserver
 
-Vist `http://127.0.0.1:8000/` with your web browser.
+Visit `http://127.0.0.1:8000/` with your web browser.
 
 *   [Work with database and model]
 
-    vi settings.py
+        vi settings.py
 
 Alter `ENGINE`, `NAME`, `USER`, `PASSWORD` and `HOST` according to the comments in the file.
 
 *   [Install WSGI module]
 
-    sudo apt-get install libapache2-mod-wsgi
-    a2enmod wsgi
+        sudo apt-get install libapache2-mod-wsgi
+        a2enmod wsgi
     
 *   [Config Django and WSGI]
 
-    vi your_django_project/your_default_app.wsgi
+        vi your_django_project/your_default_app.wsgi
 
 and add:
 
@@ -212,7 +212,7 @@ and add:
 
 *   [Config Apache and WSGI]
 
-    vi /etc/apache2/sites-available/default
+        vi /etc/apache2/sites-available/default
 
 add:
 
@@ -224,19 +224,19 @@ add:
 
 *   [Verify WSGI]
     
-    sudo service apache2 restart
+        sudo service apache2 restart
 
 Send `GET` or `POST` http request to your server and see how it works.
 
 *   [Start your project]
 
-    django-admin startproject your_project
-    python manage.py startapp your_app
+        django-admin startproject your_project
+        python manage.py startapp your_app
 
 *   [Add views and models]
 
-    vi views.py
-    vi urls.py
+        vi views.py
+        vi urls.py
 
 Do not forget to:
     
