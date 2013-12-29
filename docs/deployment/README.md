@@ -263,4 +263,4 @@ Add you own http request handler to get things done!
 If your `apache wsgi` is not in `deamon` mode, you may need to restart `apache` when you modify your project.
 
 ### LTP
-Leave to zhaohuan.
+Since we have integrated `LTP` into our project, we don't need to deploy `LTP` specifically, however, for the usage of LTP, you can refer to its official document at [LTP使用文档v3.0](https://github.com/HIT-SCIR/ltp/blob/master/doc/ltp-document-3.0.md).
