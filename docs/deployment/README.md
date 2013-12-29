@@ -167,9 +167,9 @@ Then you can access `http://hostname/phpMyAdmin` or `http://IP_Addr/phpMyAdmin` 
 		$javac -version
 		javac 1.7.0_21
 	
-`javac` version should have the same version number as `java` does.
+    `javac` version should have the same version number as `java` does.
 
-If you are not sure whether it is suitably installed, you can install by using `apt-get`.
+    If you are not sure whether it is suitably installed, you can install by using `apt-get`.
 
 5. Install jcc
 
