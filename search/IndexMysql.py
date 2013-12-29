@@ -168,7 +168,7 @@ class IndexMySql(object):
 
         #define the index of all the fields
         #---------step 2：connect to mysql----------
-        con = mdb.connect('localhost','root','testgce','moviedata')
+        con = mdb.connect('localhost','root','testgce','douban_movie_v3')
 
         #t_num = FieldType.NumericType it is wrong!!
         t_num = FieldType()
@@ -380,7 +380,7 @@ class IndexMySql(object):
                             adjs_str = adjs_str + ' ' + (adj_name+' ') * adj_num +add_adj
                             adjs_len = adjs_len + adj_num #最后得到总共tags的个数
 
-                    print raw_adjs
+                    #print raw_adjs
                     doc.add(StringField("raw_adjs",raw_adjs,Field.Store.YES))
 
                     if adjs_len<ADJS_AVER_LEN:

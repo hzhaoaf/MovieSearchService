@@ -25,20 +25,16 @@ basic_fields_weight = {'directors': '1.0',
                        }
 #一旦检查到该term也有boosting_fields中的type，需要增加该域的搜索
 boosting_fields_weight = {
-                        'directors': '2.0',
-                        'casts': '2.0',
-                        'title': '2.0',
-                        'original_title': '0.5',
-                        'aka': '1.0',
-                        'countries': '2.0',
-                        'user_tags': '2.5',
-                        'year': '1.0',
-                        'adjs': '2.5',
+                        'directors': '10.0',
+                        'casts': '10.0',
+                        'title': '10.0',
+                        'original_title': '5.0',
+                        'aka': '5.0',
+                        'countries': '50.0',
+                        'user_tags': '50.0',
+                        'year': '10.0',
+                        'adjs': '15.0',
                         }
-defaultWeight = 1.5
-defaultAdj = '2.5'
-defaultPerson = '2.0'
-
 use_synonymous = True
 
 def unicode_to_str(raw_str):
@@ -103,7 +99,10 @@ class Parser:
     def someConversionTrick(self,term):
         #by LA
         convertDict = {u'戳泪点'   : u'悲伤',\
-                       u'戳中泪点' : u'悲伤'}
+                       u'戳中泪点' : u'悲伤',
+                       u'戳中笑点' : u'搞笑',
+                       u'戳中点' : u'搞笑',
+                       }
         for eachKey in convertDict.keys():
             term = term.replace(eachKey,convertDict[eachKey])
         return term
@@ -135,20 +134,22 @@ class Parser:
             使用dict来管理整个过程中需要进行search的域
         '''
         query_fields = basic_fields_weight
-        adjs_str, persons_str = u'', u''
+        adjs_str, persons_str, location_str = u'', u'', u''
 
-        def generate_query_by_fields(term, field_info):
-            lines = [u'%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
+        def generate_query_by_fields(term, field_info, is_must=False):
+            if is_must:
+                lines = [u'+%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
+            else:
+                lines = [u'%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
             #lines = ['%s:%s' % (r[0], term) for r in field_info]
             return ''.join(lines)
 
         try:
             #如果term是属于某一个type
             if term in self.term_types and not self.needUseLtp(term): #后一句 LA
-                print 'dont need use ltp'
                 types = self.term_types[term]
                 for t in types:
-                    query_fields[t] = boosting_fields_weight.get(t, defaultWeight)
+                    query_fields[t] = boosting_fields_weight.get(t, 5.0)
 
                 ##custom_types = [t for t in types if t not in basic_fields_weight.keys()]
                 #if custom_types:
@@ -158,7 +159,6 @@ class Parser:
             #如果term不属于任意一个type，进行分词
             else:
                 #这个时候很有可能是一句话，就引入ltp进行分词
-                print 'need use ltp'
 
                 #---by LA start---
                 term = self.someConversionTrick(term)
@@ -169,7 +169,7 @@ class Parser:
                 #start = time.time()
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
-                adjs, persons = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
+                adjs, persons, locations = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
                 #print persons
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
@@ -177,7 +177,7 @@ class Parser:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
-                        adjs_weights = {'adjs': defaultAdj, 'user_tags': defaultAdj}
+                        adjs_weights = {'adjs': '15.0', 'user_tags': '15.0'}
                         syn_adjs = []
                         #import pdb;pdb.set_trace()
                         for adj in adjs:
@@ -186,12 +186,16 @@ class Parser:
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
-                        person_weights = {'directors': defaultPerson, 'casts': defaultPerson}
+                        person_weights = {'directors': '100.0', 'casts': '100.0'}
                         query_fields.pop('directors')
                         query_fields.pop('casts')
                         persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])
 
-            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str
+                    if locations:
+                        location_fields = {'countries': '15.0'}
+                        location_str = ' '.join([generate_query_by_fields(l, location_fields, is_must=True) for l in locations])
+
+            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str + location_str
         except Exception as e:
             import traceback
             print e
@@ -208,12 +212,10 @@ def test_parser(raw_str):
     #print term in parser.person_terms
     #parser.test_ltp('很多人觉得剧情很矫情')
     print parser.parse(raw_str)
-    print parser.needUseLtp(raw_str)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         raw_str = sys.argv[1].decode('utf8')
     else:
         raw_str = u'我想看张艺谋的电影'
-    print 'wtf'
     test_parser(raw_str)

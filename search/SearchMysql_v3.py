@@ -229,6 +229,7 @@ if __name__ == '__main__':
     #command = u'陈凯歌'
     command = u'韩国 情色'
     command = u'我想看精彩的电影'
+    command = u'王家卫的电影'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
     retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)
