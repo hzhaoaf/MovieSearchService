@@ -85,10 +85,12 @@ def get_items():
         # Save to file
         htmlData = response.read()
 
+        '''
         htmlFileName = 'now_playing.html'
         print "Now saving to file: %s" % (htmlFileName)
         with open(htmlFileName, "wb") as htmlWriter:
             htmlWriter.write(htmlData)
+        '''
 
         return htmlData
 
