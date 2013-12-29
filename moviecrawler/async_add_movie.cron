@@ -1,1 +1,5 @@
 * /5 * * * * /usr/bin/python /home/lihang/django-project/ngbackend/moviecrawler/async_add_movie_cron.py >> /home/lihang/OpenData/movie_items/movieCraweler.log 2>&1
+
+0 0 * * *   /usr/bin/python /home/lihang/django-project/ngbackend/moviecrawler/newMovieIDsFromDouban/coming/douban_movie_get_coming_movies.py >> /home/lihang/OpenData/movie_items/movieCrawler.coming.log 2>&1
+
+0 0 * * *   /usr/bin/python /home/lihang/django-project/ngbackend/moviecrawler/newMovieIDsFromDouban/nowplaying/douban_movie_get_now_playing_movies.py >> /home/lihang/OpenData/movie_items/movieCrawler.now_playing.log 2>&1
