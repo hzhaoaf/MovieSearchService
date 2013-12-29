@@ -186,7 +186,7 @@ class Parser:
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
-                        person_weights = {'directors': '10.0', 'casts': '10.0'}
+                        person_weights = {'directors': '100.0', 'casts': '100.0'}
                         query_fields.pop('directors')
                         query_fields.pop('casts')
                         persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])

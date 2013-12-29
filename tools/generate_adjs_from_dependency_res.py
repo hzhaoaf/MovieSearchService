@@ -9,7 +9,9 @@ import xml.etree.ElementTree as ET
 
 from itertools import groupby
 
-dependency_res_dir = '../../ltp/bin/comments_dependency_res/'
+from xml_processor import parse_XML
+
+dependency_res_dir = '/mnt/ltp/ltp/bin/comments_dependency_res/'
 
 TYPE = 3
 adj_res = 'type%s_adj_res' % TYPE
@@ -33,7 +35,7 @@ def parse_comments_dependency_res(filename):
     adjs = []
 
     for xml_str in xml_strs:
-        adjs.extend(parse_XML(xml_str, processing_type=TYPE))
+        adjs.extend(parse_XML(xml_str, processing_type=TYPE)[0])
 
     adj_nums = {}
     for adj in adjs:
@@ -66,6 +68,8 @@ def generate_adjs():
             traceback.print_exc()
             continue
 
+if __name__ == '__main__':
+    generate_adjs()
 
 
 
