@@ -77,6 +77,8 @@ Install `Git` by running:
 
 Then config your git refer to any cheatsheet.
 
+===========================================================
+
 ### Database
 #### Mysql
 `Mysql` may already lay in your OS, if not, do:
@@ -124,6 +126,8 @@ Edit `/etc/dbconfig-common/phpmyadmin.conf` to enable remote login and remember:
 After you make changes to config files.
 
 Then you can access `http://hostname/phpMyAdmin` or `http://IP_Addr/phpMyAdmin` to manage your mysql database.
+
+===========================================================
 
 ### PyLucene
 
@@ -242,6 +246,7 @@ Then you can access `http://hostname/phpMyAdmin` or `http://IP_Addr/phpMyAdmin` 
 
 Enjoy it ！
 
+===========================================================
 
 ### Web Service
 #### Apache2
@@ -362,6 +367,8 @@ Add you own http request handler to get things done!
 **Note**:
 
 If your `apache wsgi` is not in `deamon` mode, you may need to restart `apache` when you modify your project.
+
+===========================================================
 
 ### LTP
 Since we have integrated `LTP` into our project, we don't need to deploy `LTP` specifically, however, for the usage of LTP, you can refer to its official document at [LTP使用文档v3.0](https://github.com/HIT-SCIR/ltp/blob/master/doc/ltp-document-3.0.md).
