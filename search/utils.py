@@ -27,7 +27,7 @@ def simlifyRetDict(retDict):
 			if year_str[4:6] == '12':
 				year_num = int(year_str[0:4])
 				year_num = year_num + 1
-				retDict[eachKey] = str(year_num)
+				retDict[eachKey] = str(year_num) + year_str[4:]
 
 
 
