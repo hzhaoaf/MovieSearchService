@@ -99,7 +99,10 @@ class Parser:
     def someConversionTrick(self,term):
         #by LA
         convertDict = {u'戳泪点'   : u'悲伤',\
-                       u'戳中泪点' : u'悲伤'}
+                       u'戳中泪点' : u'悲伤',
+                       u'戳中笑点' : u'搞笑',
+                       u'戳中点' : u'搞笑',
+                       }
         for eachKey in convertDict.keys():
             term = term.replace(eachKey,convertDict[eachKey])
         return term
@@ -131,10 +134,13 @@ class Parser:
             使用dict来管理整个过程中需要进行search的域
         '''
         query_fields = basic_fields_weight
-        adjs_str, persons_str = u'', u''
+        adjs_str, persons_str, location_str = u'', u'', u''
 
-        def generate_query_by_fields(term, field_info):
-            lines = [u'%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
+        def generate_query_by_fields(term, field_info, is_must=False):
+            if is_must:
+                lines = [u'+%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
+            else:
+                lines = [u'%s:%s^%s ' % (f, term, w) for f, w in field_info.items()]
             #lines = ['%s:%s' % (r[0], term) for r in field_info]
             return ''.join(lines)
 
@@ -163,7 +169,7 @@ class Parser:
                 #start = time.time()
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
-                adjs, persons = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
+                adjs, persons, locations = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
                 #print persons
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
@@ -180,12 +186,16 @@ class Parser:
                         adjs_str = ' '.join([generate_query_by_fields(a, adjs_weights) for a in syn_adjs if len(a) > 1 or a in OK_SINGE_WORDS])
 
                     if persons:
-                        person_weights = {'directors': '10.0', 'casts': '10.0'}
+                        person_weights = {'directors': '100.0', 'casts': '100.0'}
                         query_fields.pop('directors')
                         query_fields.pop('casts')
                         persons_str = ' '.join([generate_query_by_fields(p, person_weights) for p in persons])
 
-            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str
+                    if locations:
+                        location_fields = {'countries': '15.0'}
+                        location_str = ' '.join([generate_query_by_fields(l, location_fields, is_must=True) for l in locations])
+
+            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str + location_str
         except Exception as e:
             import traceback
             print e

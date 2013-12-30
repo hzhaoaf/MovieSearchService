@@ -77,6 +77,8 @@ Install `Git` by running:
 
 Then config your git refer to any cheatsheet.
 
+===========================================================
+
 ### Database
 #### Mysql
 `Mysql` may already lay in your OS, if not, do:
@@ -125,22 +127,126 @@ After you make changes to config files.
 
 Then you can access `http://hostname/phpMyAdmin` or `http://IP_Addr/phpMyAdmin` to manage your mysql database.
 
+===========================================================
+
 ### PyLucene
 
+#### Required Packages
 
+* python(of course)
+* python-dev
+* setuptools
+* jdk
+* jcc
+* Ant
 
+#### Procedures:
 
+1. Install python 2.7.5
+	
+2. Intall python-dev
+		
+		sudo apt-get install python-dev
+	
+3. Install setuptools(easy_install)
 
+	    download ez_setup.py
 
+		python ez_setup.py
 
+4. Install jdk
 
+	check your JDK Version 
 
+		java -version
+		javac -version
+	
 
+	You may get this result:
 
+		$java -version
+		java version "1.7.0_21"
+		OpenJDK Runtime Environment (IcedTea 2.3.9) (7u21-2.3.9-1ubuntu1)OpenJDK Server VM (build 23.7-b01, mixed mode)
+		
+		$javac -version
+		javac 1.7.0_21
+	
+    `javac` version should have the same version number as `java` does.
 
+    If you are not sure whether it is suitably installed, you can install by using `apt-get`.
 
+5. Install jcc
 
+		cd jcc
+	
+	Change your JDK path:
 
+		JDK = {
+			'darwin': JAVAHOME,
+			'ipod': '/usr/include/gcc',
+			'linux2': '/usr/lib/jvm/java-7-openjdk-amd64', <---change this path to adjust your system
+			'sunos5': '/usr/jdk/instances/jdk1.6.0',
+			'win32': JAVAHOME,
+			'mingw32': JAVAHOME,
+			'freebsd7': '/usr/local/diablo-jdk1.6.0'
+			}
+	
+	Then build and install:
+
+		python setup.py build
+		sudo python setup.py install
+	
+
+	If no error messages pop up, you got luck:-).
+
+6. Get Ant
+
+		sudo apt-get install ant
+	
+7. Install pylucene
+
+	Modify Makefile:
+
+		# Linux (Ubuntu 11.10 64-bit, Python 2.7.2, OpenJDK 1.7, setuptools 0.6.16)
+		# Be sure to also set JDK['linux2'] in jcc's setup.py to the JAVA_HOME value
+		# used below for ANT (and rebuild jcc after changing it).
+		PREFIX_PYTHON=/usr
+		ANT=JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-i386 /usr/bin/ant
+		PYTHON=$(PREFIX_PYTHON)/bin/python
+		JCC=$(PYTHON) -m jcc --shared
+		NUM_FILES=2
+
+	Find this line:
+
+		#JARS+=$(SMARTCN_JAR)            # smart chinese analyzer
+
+	Delete the prefix `#`:
+
+	Find
+
+		--exclude org.apache.lucene.sandbox.queries.regex.JakartaRegexpCapabilities \
+	
+	And add this line blow it:
+
+		--exclude org.apache.lucene.analysis.cn.smart.AnalyzerProfile\
+	
+
+	Then run:
+
+		make
+		sudo make install
+	
+8. Verify And Test
+
+	In a Python Console:
+
+		>>import lucene
+		>>lucene.*
+	
+
+Enjoy it ！
+
+===========================================================
 
 ### Web Service
 #### Apache2
@@ -262,5 +368,7 @@ Add you own http request handler to get things done!
 
 If your `apache wsgi` is not in `deamon` mode, you may need to restart `apache` when you modify your project.
 
+===========================================================
+
 ### LTP
-Leave to zhaohuan.
+Since we have integrated `LTP` into our project, we don't need to deploy `LTP` specifically, however, for the usage of LTP, you can refer to its official document at [LTP使用文档v3.0](https://github.com/HIT-SCIR/ltp/blob/master/doc/ltp-document-3.0.md).

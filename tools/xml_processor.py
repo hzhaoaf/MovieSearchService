@@ -30,7 +30,9 @@ def parse_XML(xml_str, processing_type=1):
 
     words = root.findall('.//word[@pos="nh"]')
     persons = [w.attrib.get('cont') for w in words]
+    words = root.findall('.//word[@pos="ns"]')
+    locations = [w.attrib.get('cont') for w in words]
 
-    return adjs, persons
+    return adjs, persons, locations
 
 

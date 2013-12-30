@@ -641,7 +641,7 @@ def reRank(movieDictList,maxDict,command=None,rankFlag = None):
 
 		# rating_av, rating_total, popularity, trends, impressive,howNew = basicFeaturesOfMovie(eachDict,maxDict)
 
-		print '---'
+		#print '---'
 		#process tags
 		tag_list = getFieldValueInCommand(command,u'user_tags')
 		if tag_list: #exist,说明用户搜索了该域
