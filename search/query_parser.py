@@ -37,9 +37,6 @@ boosting_fields_weight = {
                         }
 use_synonymous = True
 
-
-stop_nouns = [u"电影",u"故事"]
-
 def unicode_to_str(raw_str):
     if isinstance(raw_str, str):
         return raw_str
@@ -110,9 +107,7 @@ class Parser:
             term = term.replace(eachKey,convertDict[eachKey])
         return term
 
-
     #-----
-
 
 
 
@@ -149,35 +144,6 @@ class Parser:
             #lines = ['%s:%s' % (r[0], term) for r in field_info]
             return ''.join(lines)
 
-        #-------------
-        # a stupid method beacuse I dont want to modify to much 
-        def getRidOfStopNouns(terms):
-            for term in terms:
-                if term in stop_nouns:
-                    terms.remove(term)
-            return terms
-
-
-
-
-        def generateNounsVerbsQuery(terms):
-            terms_str = ''
-            terms = getRidOfStopNouns(terms)
-            query_fields_ = {}
-            for term in terms:
-                print term
-                if term in self.term_types:
-                    types = self.term_types[term]
-                    for t in types:
-                        print t
-                        query_fields_[t] = boosting_fields_weight.get(t, 5.0)
-                    term_str = ' '.join([generate_query_by_fields(t, query_fields_, is_must=False) for t in terms])
-                    terms_str = terms_str + term_str
-            return terms_str
-
-
-        #-------------
-
         try:
             #如果term是属于某一个type
             if term in self.term_types and not self.needUseLtp(term): #后一句 LA
@@ -203,11 +169,11 @@ class Parser:
                 #start = time.time()
                 ltp_res = self.ltp_client.analysis(unicode_to_str(term), ltpservice.LTPOption.PARSER)
                 #print ltp_res.tostring()
-                adjs, persons, locations,nouns,verbs = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
+                adjs, persons, locations = parse_XML(ltp_res.tostring(), 1)#直接取出形容词即可
                 #print persons
                 #能找出形容词则生成形容词域，否则直接返回term
                 #print 'get adjs cost %.2fs' % (time.time() - start)
-                if not adjs and not persons and not locations and not nouns and not verbs:
+                if not adjs and not persons:
                     return generate_query_by_fields(term, query_fields)
                 else:
                     if adjs:
@@ -229,14 +195,7 @@ class Parser:
                         location_fields = {'countries': '15.0'}
                         location_str = ' '.join([generate_query_by_fields(l, location_fields, is_must=True) for l in locations])
 
-                    nouns_str = generateNounsVerbsQuery(nouns)
-                    verbs_str = generateNounsVerbsQuery(verbs)
-
-                    nouns_str = ''
-                    verbs_str = ''
- 
-
-            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str + location_str + nouns_str + verbs_str
+            return generate_query_by_fields(term, query_fields) + adjs_str + persons_str + location_str
         except Exception as e:
             import traceback
             print e
