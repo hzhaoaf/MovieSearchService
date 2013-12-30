@@ -232,7 +232,8 @@ class Parser:
                     nouns_str = generateNounsVerbsQuery(nouns)
                     verbs_str = generateNounsVerbsQuery(verbs)
 
-                    #nouns_str = ''
+                    nouns_str = ''
+                    verbs_str = ''
  
 
             return generate_query_by_fields(term, query_fields) + adjs_str + persons_str + location_str + nouns_str + verbs_str
