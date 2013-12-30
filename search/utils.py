@@ -22,6 +22,13 @@ def simlifyRetDict(retDict):
 	for eachKey in keyList:
 		if eachKey not in reservedList:
 			retDict.pop(eachKey)
+		if eachKey == 'year':
+			year_str = retDict[eachKey]
+			if year_str[4:6] == '12':
+				year_num = year[0:4]
+				year_num = year_num + 1
+				retDict[eachKey] = str(year_num)
+
 
 
 def findall(string,sub_str):
