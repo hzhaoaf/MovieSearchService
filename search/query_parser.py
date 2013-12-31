@@ -139,7 +139,7 @@ class Parser:
             使用dict来管理整个过程中需要进行search的域
         '''
         query_fields = basic_fields_weight
-        adjs_str, persons_str, location_str = u'', u'', u''
+        adjs_str, persons_str, location_str, nouns_str,verbs_str = u'', u'', u'',u'',u''
 
         def generate_query_by_fields(term, field_info, is_must=False):
             if is_must:
