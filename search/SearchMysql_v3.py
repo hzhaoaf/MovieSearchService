@@ -221,15 +221,14 @@ if __name__ == '__main__':
     #    INDEX_DIR = '~/lucene_index'
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     #print 'lucene', lucene.VERSION
-    base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    directory = SimpleFSDirectory(File(os.path.join(base_dir, INDEX_DIR)))
-    searcher = IndexSearcher(DirectoryReader.open(directory))
+    searcher,analyzer = config()
+
     #command = 'title:中国^2.0 title:先生^1.0'
     command = u'张艺谋'
     #command = u'陈凯歌'
     command = u'韩国 情色'
     command = u'我想看精彩的电影'
-    command = u'王家卫的电影'
+    command = u'关于人性的电影'
     import IndexMysql
     aWrapper = IndexMysql.CreateAWrapper()
     retList = run(command,searcher, aWrapper, debug=True, use_custom_parser=True)

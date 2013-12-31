@@ -165,11 +165,9 @@ class Parser:
             terms = getRidOfStopNouns(terms)
             query_fields_ = {}
             for term in terms:
-                print term
                 if term in self.term_types:
                     types = self.term_types[term]
                     for t in types:
-                        print t
                         query_fields_[t] = boosting_fields_weight.get(t, 5.0)
                     term_str = ' '.join([generate_query_by_fields(t, query_fields_, is_must=False) for t in terms])
                     terms_str = terms_str + term_str
