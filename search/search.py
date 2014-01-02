@@ -44,6 +44,8 @@ def search(request):
         ansCount = len(retList)
 
         retObj = {}
+        #debug
+        retObj['debug'] = debug
 
         if start+count < ansCount:
             retObj['count'] = count
@@ -58,7 +60,6 @@ def search(request):
         else:
             retObj['count'] = '老纪你看清楚，总共才'+str(ansCount)+'个！'
 
-        retObj['debug'] = VMEnv
         
         retJson = retObj
         #retJson = simplejson.dumps(retObj,ensure_ascii=False)  #all is unicode withoout ensure...
