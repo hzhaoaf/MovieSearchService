@@ -6,3 +6,4 @@ VMEnv = SearchMysql.getVMEnv()
 debug = str(type(VMEnv))
 
 print debug
+
