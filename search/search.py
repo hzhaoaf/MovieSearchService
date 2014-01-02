@@ -16,6 +16,10 @@ Return JSON
 
 
 SearchMysql.initJvm()
+VMEnv = SearchMysql.getVMEnv()
+bebug = type(VMEnv)
+
+
 
 
 def search(request):
@@ -53,6 +57,8 @@ def search(request):
             retObj['subjects'] = retList[start:ansCount]
         else:
             retObj['count'] = '老纪你看清楚，总共才'+str(ansCount)+'个！'
+
+        retObj['debug'] = VMEnv
         
         retJson = retObj
         #retJson = simplejson.dumps(retObj,ensure_ascii=False)  #all is unicode withoout ensure...
