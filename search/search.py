@@ -16,10 +16,6 @@ Return JSON
 
 
 SearchMysql.initJvm()
-VMEnv = SearchMysql.getVMEnv()
-debug = str(type(VMEnv))
-
-
 
 
 def search(request):
@@ -31,6 +27,12 @@ def search(request):
         start = int(urllib.unquote(request.GET['start']))#start 规定从0开始
         count = int(urllib.unquote(request.GET['count']))
 
+        #get current jvm
+        VMEnv = SearchMysql.getVMEnv()
+        if VMEnv:
+            VMEnv.attachCurrentThread()
+        else:
+            SearchMysql.initJvm()
 
         # Here goes the PyLucene routines, fetch results and construct json
         # We can construct a standard Python Dictionary and then convert it to JSON
@@ -45,6 +47,7 @@ def search(request):
 
         retObj = {}
         #debug
+
         retObj['debug'] = 'debug'
 
         if start+count < ansCount:
