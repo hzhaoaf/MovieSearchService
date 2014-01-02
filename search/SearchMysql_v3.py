@@ -67,6 +67,9 @@ def initJvm():
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print 'lucene', lucene.VERSION
 
+def getVMEnv():
+    return lucene.getVMEnv()
+
 def config():
     base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     directory = SimpleFSDirectory(File(os.path.join(base_dir, INDEX_DIR)))
