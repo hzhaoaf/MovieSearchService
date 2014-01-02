@@ -17,7 +17,7 @@ Return JSON
 
 SearchMysql.initJvm()
 VMEnv = SearchMysql.getVMEnv()
-bebug = type(VMEnv)
+debug = type(VMEnv)
 
 
 
