@@ -45,7 +45,7 @@ def search(request):
 
         retObj = {}
         #debug
-        retObj['debug'] = debug
+        retObj['debug'] = 'debug'
 
         if start+count < ansCount:
             retObj['count'] = count
