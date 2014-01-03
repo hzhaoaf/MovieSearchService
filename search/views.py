@@ -24,6 +24,8 @@ return json
 
 module_dir = os.path.dirname(__file__)  # get current directory
 searchmysql.initJvm()
+        
+retobj = {}
 
 def index(request):
     return HttpResponse('This is a test html')
@@ -46,8 +48,10 @@ def search(request):
         #get current jvm
         VMEnv = searchmysql.getVMEnv()
         if VMEnv:
+            retobj['debug'] = "attach to jvm"
             VMEnv.attachCurrentThread()
         else:
+            retobj['debug'] = "new jvm"
             searchmysql.initJvm()
 
 
@@ -62,9 +66,7 @@ def search(request):
 
         anscount = len(retlist)
 
-        retobj = {}
 
-        retobj['debug'] = str(type(VMEnv))
 
         if start+count < anscount:
             retobj['count'] = count
