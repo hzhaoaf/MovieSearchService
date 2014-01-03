@@ -43,6 +43,14 @@ def search(request):
         start = int(urllib.unquote(request.GET['start']))#start 规定从0开始
         count = int(urllib.unquote(request.GET['count']))
 
+        #get current jvm
+        VMEnv = SearchMysql.getVMEnv()
+        if VMEnv:
+            VMEnv.attachCurrentThread()
+        else:
+            SearchMysql.initJvm()
+
+
 
         # here goes the pylucene routines, fetch results and construct json
         # we can construct a standard python dictionary and then convert it to json
@@ -55,6 +63,8 @@ def search(request):
         anscount = len(retlist)
 
         retobj = {}
+
+        retobj['debug'] = 'debug'
 
         if start+count < anscount:
             retobj['count'] = count
