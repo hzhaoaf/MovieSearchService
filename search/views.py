@@ -23,9 +23,11 @@ return json
 '''
 
 module_dir = os.path.dirname(__file__)  # get current directory
-searchmysql.initJvm()
-        
+
+env = searchmysql.initJvm()
+
 retobj = {}
+retobj['debug0'] = str(type(env))
 
 def index(request):
     return HttpResponse('This is a test html')
