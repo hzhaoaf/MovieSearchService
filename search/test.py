@@ -1,7 +1,11 @@
 import SearchMysql_v3 as SearchMysql
 
+env = SearchMysql.initJvm()
+print str(type(env))
 
-SearchMysql.initJvm()
+
+
+
 VMEnv=SearchMysql.getVMEnv()
 if VMEnv:
 	print VMEnv.attachCurrentThread()
@@ -9,7 +13,4 @@ else:
 	SearchMysql.initJvm()
 
 
-debug = str(type(VMEnv))
-
-print debug
-
+print str(type(VMEnv))
