@@ -64,8 +64,9 @@ class IsolationSimilarity(DefaultSimilarity):
 
 def initJvm():
     #Init the jvm
-    lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+    JVM = lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print 'lucene', lucene.VERSION
+    return JVM
 
 def getVMEnv():
     return lucene.getVMEnv()
