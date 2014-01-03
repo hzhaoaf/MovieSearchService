@@ -24,9 +24,12 @@ return json
 
 module_dir = os.path.dirname(__file__)  # get current directory
 
+
+last_env = searchmysql.getVMEnv()
 env = searchmysql.initJvm()
 
 retobj = {}
+retobj['last_env'] = str(last_env)
 retobj['initResult'] = str(env)
 retobj['getJvm'] = str(searchmysql.getVMEnv())
 
