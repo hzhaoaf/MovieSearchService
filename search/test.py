@@ -1,7 +1,7 @@
 import SearchMysql_v3 as SearchMysql
 
 env = SearchMysql.initJvm()
-print str(type(env))
+print str(env)
 
 
 
@@ -13,7 +13,7 @@ else:
 	SearchMysql.initJvm()
 
 
-print str(type(VMEnv))
+print str(VMEnv)
 
 a = []
 b = a

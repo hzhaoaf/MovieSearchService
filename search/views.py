@@ -38,10 +38,13 @@ env = searchmysql.initJvm()
 new_get_env = searchmysql.getVMEnv()
 
 retobj = {}
-retobj['last_get_env'] = str(last_get_env)
-retobj['new_get_env'] = str(new_get_env)
-retobj['initResult'] = str(env)
-retobj['theSameorNot'] = (new_get_env is env)
+
+DEBUG = False
+if DEBUG:
+    retobj['last_get_env'] = str(last_get_env)
+    retobj['new_get_env'] = str(new_get_env)
+    retobj['initResult'] = str(env)
+    retobj['theSameorNot'] = (new_get_env is env)
 
 
 def index(request):
