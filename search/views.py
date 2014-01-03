@@ -27,7 +27,8 @@ module_dir = os.path.dirname(__file__)  # get current directory
 env = searchmysql.initJvm()
 
 retobj = {}
-retobj['debug0'] = str(type(env))
+retobj['initResult'] = str(type(env))
+retobj['getJvm'] = str(searchmysql.getVMEnv())
 
 def index(request):
     return HttpResponse('This is a test html')
