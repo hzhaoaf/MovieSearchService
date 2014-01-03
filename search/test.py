@@ -14,3 +14,8 @@ else:
 
 
 print str(type(VMEnv))
+
+a = []
+b = a
+
+print a is b

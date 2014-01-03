@@ -24,14 +24,25 @@ return json
 
 module_dir = os.path.dirname(__file__)  # get current directory
 
+'''
+this will get none which means there's no jvm in the memory,  that can also be 
+proved cause you'll never initJvm twice
+'''
+last_get_env = searchmysql.getVMEnv()
 
-last_env = searchmysql.getVMEnv()
+'''
+no jvm in memory, so you can initJvm here 
+'''
 env = searchmysql.initJvm()
 
+new_get_env = searchmysql.getVMEnv()
+
 retobj = {}
-retobj['last_env'] = str(last_env)
+retobj['last_get_env'] = str(last_get_env)
+retobj['new_get_env'] = str(new_get_env)
 retobj['initResult'] = str(env)
-retobj['getJvm'] = str(searchmysql.getVMEnv())
+retobj['theSameorNot'] = (new_get_env is env)
+
 
 def index(request):
     return HttpResponse('This is a test html')
