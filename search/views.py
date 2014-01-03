@@ -52,7 +52,8 @@ def search(request):
         VMEnv = searchmysql.getVMEnv()
         if VMEnv:
             retobj['debug'] = "attach to jvm"
-            VMEnv.attachCurrentThread()
+            res = VMEnv.attachCurrentThread()
+            retobj['attachResult'] = res
         else:
             retobj['debug'] = "new jvm"
             searchmysql.initJvm()
