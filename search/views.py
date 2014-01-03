@@ -64,7 +64,7 @@ def search(request):
 
         retobj = {}
 
-        retobj['debug'] = 'debug'
+        retobj['debug'] = str(type(VMEnv))
 
         if start+count < anscount:
             retobj['count'] = count
