@@ -44,11 +44,11 @@ def search(request):
         count = int(urllib.unquote(request.GET['count']))
 
         #get current jvm
-        VMEnv = SearchMysql.getVMEnv()
+        VMEnv = searchmysql.getVMEnv()
         if VMEnv:
             VMEnv.attachCurrentThread()
         else:
-            SearchMysql.initJvm()
+            searchmysql.initJvm()
 
 
 
