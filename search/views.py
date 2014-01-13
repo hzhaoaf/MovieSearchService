@@ -197,35 +197,45 @@ def detail(request, subject_id):
     '''
         根据movie_id，查询电影的detail信息，json形式返回
     '''
-    subject_id = int(subject_id)
-    movie_items = list(MovieItems.objects.filter(subject_id=subject_id))
-    if not movie_items:
-        return HttpResponse("{'error': 'can not find this item'}")
-    movie_item = movie_items[0]
-    ret = model_to_dict(movie_item)
-    comments = get_comments_by_id(subject_id)
-    awards = get_awards_by_id(subject_id)
-    recommended_movies = get_recommended_movies(ret['others_like'])
-    ret['comments'] = comments
-    ret['awards'] = awards
-    ret['others_like'] = recommended_movies
-    return HttpResponse(simplejson.dumps(ret, ensure_ascii = False), content_type="application/json")
+    try:
+        subject_id = int(subject_id)
+        movie_items = list(MovieItems.objects.filter(subject_id=subject_id))
+        if not movie_items:
+            return HttpResponse("{'error': 'can not find this item'}")
+        movie_item = movie_items[0]
+        ret = model_to_dict(movie_item)
+        comments = get_comments_by_id(subject_id)
+        awards = get_awards_by_id(subject_id)
+        recommended_movies = get_recommended_movies(ret['others_like'])
+        ret['comments'] = comments
+        ret['awards'] = awards
+        ret['others_like'] = recommended_movies
+        ret_json = simplejson.dumps(ret, ensure_ascii = False)
+        return HttpResponse(ret_json, content_type="application/json")
+    except Exception as e:
+        return HttpResponse("发生异常: %s，老纪你在详情页捕获一下" % e, content_type="application/json")
 
 def get_comments_by_id(subject_id, retN=20):
-    comments = list(ShortComments.objects.filter(subject_id=subject_id))
-    comments = [model_to_dict(c) for c in comments]
-    comments = sorted(comments, key=lambda d: d['comment_date'], reverse=True)
-    return comments[:retN]
+    try:
+        comments = list(ShortComments.objects.filter(subject_id=subject_id))
+        comments = [model_to_dict(c) for c in comments]
+        comments = sorted(comments, key=lambda d: d['comment_date'], reverse=True)
+        return comments[:retN]
+    except Exception as e:
+        return []
 
 def get_awards_by_id(subject_id):
-    awards = list(MovieAwards.objects.filter(subject_id=subject_id))
-    awards = [model_to_dict(a) for a in awards]
-    awards = awards[0] if awards else []
-    if awards:
-        awards['award_items'] = json.loads(awards['award_items'])
-    #for k, v in awards.items():
-    #    awards[k] = v.encode('utf8')
-    return awards
+    try:
+        awards = list(MovieAwards.objects.filter(subject_id=subject_id))
+        awards = [model_to_dict(a) for a in awards]
+        awards = awards[0] if awards else []
+        if awards:
+            awards['award_items'] = json.loads(awards['award_items'])
+        #for k, v in awards.items():
+        #    awards[k] = v.encode('utf8')
+        return awards
+    except Exception as e:
+        return []
 
 def get_recommended_movies(others_like_movies):
     if not others_like_movies:
